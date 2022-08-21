@@ -40,4 +40,3 @@ namespace OngProject.Core.Models
     }
 
 }
-}
