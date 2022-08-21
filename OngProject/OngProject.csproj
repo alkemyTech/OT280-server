@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <Folder Include="App_data\" />
+    <Folder Include="Core\Interfaces\" />
+    <Folder Include="Repositories\Interfaces\" />
   </ItemGroup>
 
 </Project>
