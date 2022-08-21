@@ -8,5 +8,9 @@ namespace OngProject.DataAccess
         {
             
         }
+        public DbSet<OngProject.Core.Models.Categories> Categories { get; set; }
+        public DbSet<OngProject.Core.Models.Members> Members { get; set; }
+        public DbSet<OngProject.Core.Models.News> News { get; set; }
+        public DbSet<OngProject.Core.Models.Organization> Organization { get; set; }
     }
 }
