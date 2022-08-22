@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using OngProject.Core.Models;
 
 namespace OngProject.DataAccess
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<Users, Roles, string>
     {
         public AppDbContext(DbContextOptions ops) : base(ops)
         {

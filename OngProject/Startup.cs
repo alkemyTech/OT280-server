@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using OngProject.DataAccess;
+using Microsoft.AspNetCore.Identity;
+using OngProject.Core.Models;
 
 namespace OngProject
 {
@@ -21,6 +23,10 @@ namespace OngProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // For Identity
+            services.AddIdentity<Users, Roles>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
