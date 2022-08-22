@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using OngProject.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using OngProject.Core.Models;
+using OngProject.Middleware;
 
 namespace OngProject
 {
@@ -29,6 +30,10 @@ namespace OngProject
                 .AddDefaultTokenProviders();
 
             services.AddControllers();
+
+            //Injection of services
+            IoC.AddDependency(services);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OngProject", Version = "v1" });
