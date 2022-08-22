@@ -74,14 +74,40 @@ namespace OngProject.Repositories
             return await _unitOfWork.Context.Set<T>().FindAsync(id);
         }
 
+        public async Task<T> GetById(string id)
+        {
+            return await _unitOfWork.Context.Set<T>().FindAsync(id);
+        }
+
         public Task<bool> Update(T entity)
         {
+            //return await _unitOfWork.Context.Set<T>().Update(entity);
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete(int id)
+        public void Delete(T entity)
         {
-            throw new NotImplementedException();
+            _unitOfWork.Context.Set<T>().Remove(entity);
+            _unitOfWork.Context.SaveChanges();
+        }
+
+        public async Task<int> DeleteAsync(T entity)
+        {
+            int deleted = 0;
+
+            try
+            {
+                _unitOfWork.Context.Set<T>().Remove(entity);
+                var save = await _unitOfWork.Context.SaveChangesAsync();
+
+                if (save > 0)
+                    deleted = 1;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return deleted;
         }
     }
 }

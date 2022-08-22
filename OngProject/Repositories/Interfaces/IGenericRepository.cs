@@ -15,8 +15,10 @@ namespace OngProject.Repositories.Interfaces
             string includeProperties = "");
 
         Task<T> GetById(int id);
+        Task<T> GetById(string id);
         Task<bool> CreateAsync(T entity);
         Task<bool> Update(T entity);
-        Task<bool> Delete(int id);
+        Task<int> DeleteAsync(T entity);
+        void Delete(T entity);
     }
 }
