@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using OngProject.Entities.Domain;
+using OngProject.Core.Models;
 
 namespace OngProject.DataAccess
 {
