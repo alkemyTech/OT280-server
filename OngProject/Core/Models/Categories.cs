@@ -6,7 +6,9 @@ namespace OngProject.Core.Models
 {
     public class Categories
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
         /*
          Campos:
          id: INTEGER NOT NULL AUTO_INCREMENT
