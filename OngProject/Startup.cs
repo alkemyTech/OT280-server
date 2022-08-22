@@ -7,7 +7,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using OngProject.DataAccess;
 using Microsoft.AspNetCore.Identity;
-using OngProject.Entities.Domain;
+using OngProject.Core.Models;
 
 namespace OngProject
 {

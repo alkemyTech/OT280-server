@@ -5,7 +5,7 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace OngProject.Entities.Domain
+namespace OngProject.Core.Models
 {
     [Index(nameof(Email), IsUnique = true)]
     public class Users : IdentityUser

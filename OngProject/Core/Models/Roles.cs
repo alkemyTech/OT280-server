@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
-namespace OngProject.Entities.Domain
+namespace OngProject.Core.Models
 {
     public class Roles : IdentityRole
     {
