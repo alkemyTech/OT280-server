@@ -14,9 +14,9 @@ namespace OngProject.Repositories.Interfaces
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             string includeProperties = "");
 
-        Task<T> GetById(Guid id);
+        Task<T> GetById(int id);
         Task<bool> CreateAsync(T entity);
         Task<bool> Update(T entity);
-        Task<bool> Delete(Guid id);
+        Task<bool> Delete(int id);
     }
 }

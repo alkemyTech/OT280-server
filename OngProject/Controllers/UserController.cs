@@ -29,7 +29,7 @@ namespace OngProject.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IEnumerable<Users>> GetById(Guid id)
+        public async Task<IEnumerable<Users>> GetById(int id)
         {
             var user = await _genericRepository.GetById(id);
             if (user == null)
@@ -54,7 +54,7 @@ namespace OngProject.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, Users user)
+        public async Task<IActionResult> Update(int id, Users user)
         {
             //if (id != user.Id)
             //    return BadRequest();
@@ -67,7 +67,7 @@ namespace OngProject.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(int id)
         {
             var item = await _genericRepository.GetById(id);
 

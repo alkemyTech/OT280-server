@@ -69,7 +69,7 @@ namespace OngProject.Repositories
             return created;
         }
 
-        public async Task<T> GetById(Guid id)
+        public async Task<T> GetById(int id)
         {
             return await _unitOfWork.Context.Set<T>().FindAsync(id);
         }
@@ -79,7 +79,7 @@ namespace OngProject.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> Delete(Guid id)
+        public Task<bool> Delete(int id)
         {
             throw new NotImplementedException();
         }
