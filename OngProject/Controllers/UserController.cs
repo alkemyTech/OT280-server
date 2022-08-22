@@ -29,7 +29,7 @@ namespace OngProject.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IEnumerable<Users>> GetById(int id)
+        public async Task<IEnumerable<Users>> GetById(string id)
         {
             var user = await _genericRepository.GetById(id);
             if (user == null)
