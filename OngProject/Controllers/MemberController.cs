@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
+using OngProject.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace OngProject.Controllers
@@ -12,14 +13,15 @@ namespace OngProject.Controllers
     [ApiController]
     public class MemberController : ControllerBase
     {
-        private readonly IMemberRepository _memberRepository;
+        private readonly IMemberService _memberService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public MemberController(IMemberRepository memberRepository, IUnitOfWork unitOfWork)
+        public MemberController(IMemberService memberService, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._memberRepository = memberRepository;
+            this._memberService = memberService;
             this._unitOfWork = unitOfWork;
+            this._mapper = mapper;
         }
 
         [HttpPost]
@@ -31,7 +33,7 @@ namespace OngProject.Controllers
             }
 
             var _member = _mapper.Map<Members>(member);
-            var created = await _memberRepository.CreateAsync(_member);
+            var created = await _memberService.CreateAsync(_member);
 
             if (created)
                 _unitOfWork.Commit();
@@ -42,12 +44,12 @@ namespace OngProject.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var member = await _memberRepository.GetById(id);
+            var member = await _memberService.GetById(id);
 
             if (member == null)
                 return BadRequest();
 
-            await _memberRepository.DeleteAsync(member);
+            await _memberService.DeleteAsync(member);
             _unitOfWork.Commit();
 
             return Ok(member);
