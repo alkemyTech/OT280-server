@@ -5,6 +5,7 @@ using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OngProject.Controllers
@@ -55,5 +56,31 @@ namespace OngProject.Controllers
             return Ok(member);
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MemberDTO>))]
+        public async Task<IActionResult> GetAll()
+        {
+            var members = await _memberService.GetAllAsync();
+            var membersDTO = _mapper.Map<IEnumerable<MemberDTO>>(members);
+
+            return new OkObjectResult(membersDTO);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MemberDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var member = await _memberService.GetById(id);
+
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var memberDTO = _mapper.Map<MemberDTO>(member);
+
+            return new OkObjectResult(memberDTO);
+        }
     }
 }
