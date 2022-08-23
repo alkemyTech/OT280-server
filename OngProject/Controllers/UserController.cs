@@ -29,7 +29,7 @@ namespace OngProject.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IEnumerable<Users>> GetById(Guid id)
+        public async Task<IEnumerable<Users>> GetById(string id)
         {
             var user = await _genericRepository.GetById(id);
             if (user == null)
@@ -53,31 +53,31 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, Users user)
-        {
-            //if (id != user.Id)
-            //    return BadRequest();
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> Update(int id, Users user)
+        //{
+        //    //if (id != user.Id)
+        //    //    return BadRequest();
 
-            await _genericRepository.Update(user);
-            _unitOfWork.Commit();
+        //    await _genericRepository.Update(user);
+        //    _unitOfWork.Commit();
 
-            // Following up the REST standart on update we need to return NoContent
-            return NoContent();
-        }
+        //    // Following up the REST standart on update we need to return NoContent
+        //    return NoContent();
+        //}
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var item = await _genericRepository.GetById(id);
+            var user = await _genericRepository.GetById(id);
 
-            if (item == null)
+            if (user == null)
                 return BadRequest();
 
-            await _genericRepository.Delete(id);
+            await _genericRepository.DeleteAsync(user);
             _unitOfWork.Commit();
 
-            return Ok(item);
+            return Ok(user);
         }
     }
 }
