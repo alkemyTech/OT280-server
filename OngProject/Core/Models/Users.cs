@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OngProject.Core.Models
 {
-    [Index(nameof(Email), IsUnique = true)]
     public class Users : IdentityUser
     {
         [Required(ErrorMessage = "First Name is required")]
@@ -15,13 +14,6 @@ namespace OngProject.Core.Models
 
         [Required(ErrorMessage = "Last Name is required")]
         public string LastName { get; set; }
-
-        [EmailAddress]
-        [Required(ErrorMessage = "Email is required")]
-        override public string Email { get; set; }
-
-        [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
 
         [Column(TypeName = "varchar(max)")]
         public string Photo { get; set; }
