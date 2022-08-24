@@ -20,5 +20,7 @@ namespace OngProject.Repositories.Interfaces
         Task<bool> Update(T entity);
         Task<int> DeleteAsync(T entity);
         void Delete(T entity);
+        bool Delete_(T entity);
+
     }
 }
