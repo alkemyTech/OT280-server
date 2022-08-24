@@ -84,6 +84,8 @@ namespace OngProject.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditMemberDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(EditMemberDTO editMemberDTO)
         {
             var entity = await _memberService.GetById(editMemberDTO.MemberId);
@@ -95,7 +97,6 @@ namespace OngProject.Controllers
 
             var member = await _memberService.UpdateMember(entity, editMemberDTO);
             var memberDTO = _mapper.Map<EditMemberDTO>(entity);
-            //await _memberService.Update(member);
             _unitOfWork.Commit();
 
             return new OkObjectResult(memberDTO);
