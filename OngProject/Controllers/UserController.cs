@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Repositories.Interfaces;
@@ -22,6 +23,7 @@ namespace OngProject.Controllers
             this._unitOfWork = unitOfWork;
         }
 
+        [Authorize(Roles="Admin")]
         [HttpGet]
         public async Task<IEnumerable<Users>> Get()
         {
