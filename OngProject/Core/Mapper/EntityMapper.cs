@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using System;
@@ -16,6 +16,17 @@ namespace OngProject.Core.Mapper
             CreateMap<MemberDTO, Members>();
             CreateMap<EditMemberDTO, Members>();
             CreateMap<Members, EditMemberDTO>();
+
+            // Roles
+
+            CreateMap<Roles, RoleDTO>();
+            CreateMap<RoleDTO, Roles>();
+            
+            CreateMap<EditRoleDTO, Roles>();
+            CreateMap<Roles, EditRoleDTO>();
+
+            CreateMap<Roles, CreateRoleDTO>();
+            CreateMap<CreateRoleDTO, Roles>();
         }
     }
 }

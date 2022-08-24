@@ -110,5 +110,24 @@ namespace OngProject.Repositories
             }
             return deleted;
         }
+
+        public bool Delete_(T entity)
+        {
+            bool deleted = false;
+
+            try
+            {
+                var remove = _unitOfWork.Context.Set<T>().Remove(entity);
+
+                if (remove != null)
+                    deleted = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return deleted;
+        }
     }
 }
