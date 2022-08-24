@@ -13,6 +13,9 @@ namespace OngProject.Core.Mapper
         public EntityMapper()
         {
             CreateMap<Members, MemberDTO>();
+            CreateMap<MemberDTO, Members>();
+            CreateMap<EditMemberDTO, Members>();
+            CreateMap<Members, EditMemberDTO>();
         }
     }
 }

@@ -80,9 +80,10 @@ namespace OngProject.Repositories
         }
 
         public Task<bool> Update(T entity)
-        {
-            //return await _unitOfWork.Context.Set<T>().Update(entity);
-            throw new NotImplementedException();
+        {            
+            _unitOfWork.Context.Set<T>().Update(entity);
+
+            return Task.FromResult(true);
         }
 
         public void Delete(T entity)
