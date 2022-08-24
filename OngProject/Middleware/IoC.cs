@@ -16,6 +16,8 @@ namespace OngProject.Middleware
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IMemberRepository, MemberRepository>();
             services.AddScoped<IMemberService, MemberService>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddAutoMapper(typeof(EntityMapper));
 
             return services;
