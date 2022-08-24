@@ -9,8 +9,6 @@ using OngProject.DataAccess;
 using Microsoft.AspNetCore.Identity;
 using OngProject.Core.Models;
 using OngProject.Middleware;
-using OngProject.Services.Interfaces;
-using OngProject.Services;
 
 namespace OngProject
 {
@@ -30,8 +28,6 @@ namespace OngProject
             services.AddIdentity<Users, Roles>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-
-            services.AddScoped<ITokenService, TokenService>();
 
             services.AddControllers();
 
