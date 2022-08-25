@@ -18,6 +18,8 @@ namespace OngProject.Middleware
             services.AddScoped<IMemberService, MemberService>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IActivityRepository, ActivityRepository>();
+            services.AddScoped<IActivityService, ActivityService>();
             services.AddAutoMapper(typeof(EntityMapper));
 
             return services;
