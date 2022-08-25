@@ -27,6 +27,9 @@ namespace OngProject.Core.Mapper
 
             CreateMap<Roles, CreateRoleDTO>();
             CreateMap<CreateRoleDTO, Roles>();
+
+            CreateMap<Activities, ActivityDTO>();
+            CreateMap<ActivityDTO, Activities>();
         }
     }
 }
