@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OngProject.Core.Models
 {
-    [Index(nameof(Email), IsUnique = true)]
     public class Users : IdentityUser
     {
         [Required(ErrorMessage = "First Name is required")]

@@ -6,14 +6,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using OngProject.Core.Models;
+using OngProject.DataAccess;
 
 namespace OngProject
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                try
+                {
+                    services.GetRequiredService<AppDbContext>().Database.Migrate();
+
+                    var userManager = services.GetRequiredService<UserManager<Users>>();
+                    var roleManager = services.GetRequiredService<RoleManager<Roles>>();
+
+                    await AppDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
+
+                }
+                catch (Exception e)
+                {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(e, "Ocurrio un error al hacer la migracion o la seed de datos");
+                    throw;
+                }
+            }
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -23,6 +51,5 @@ namespace OngProject
                     webBuilder.UseStartup<Startup>();
                 });
         
-        //devAlexUribe
     }
 }
