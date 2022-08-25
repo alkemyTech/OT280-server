@@ -30,6 +30,10 @@ namespace OngProject.Core.Mapper
 
             CreateMap<Activities, ActivityDTO>();
             CreateMap<ActivityDTO, Activities>();
+
+            // Users
+            CreateMap<Users, UserUpdateDTO>();
+            CreateMap<UserUpdateDTO, Users>();
         }
     }
 }

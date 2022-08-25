@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
+using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
+using OngProject.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +19,18 @@ namespace OngProject.Controllers
     {
         private readonly IGenericRepository<Users> _genericRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IGenericRepository<Users> genericRepository, IUnitOfWork unitOfWork)
+        public UserController(IGenericRepository<Users> genericRepository, 
+            IUnitOfWork unitOfWork,
+            IUserService userService,
+            IMapper mapper)
         {
             this._genericRepository = genericRepository;
             this._unitOfWork = unitOfWork;
+            this._userService = userService;
+            this._mapper = mapper;
         }
 
         [Authorize(Roles="Admin")]
@@ -31,12 +41,12 @@ namespace OngProject.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IEnumerable<Users>> GetById(string id)
+        public async Task<ActionResult<Users>> GetById(string id)
         {
             var user = await _genericRepository.GetById(id);
             if (user == null)
-                return (IEnumerable<Users>)NotFound();
-            return (IEnumerable<Users>)Ok(user);
+                return NotFound();
+            return Ok(user);
         }
 
         [HttpPost]
@@ -56,7 +66,7 @@ namespace OngProject.Controllers
         }
 
         //[HttpPut("{id}")]
-        //public async Task<IActionResult> Update(int id, Users user)
+        //public async Task<IActionResult> Update(string id, Users user)
         //{
         //    //if (id != user.Id)
         //    //    return BadRequest();
@@ -64,20 +74,38 @@ namespace OngProject.Controllers
         //    await _genericRepository.Update(user);
         //    _unitOfWork.Commit();
 
-        //    // Following up the REST standart on update we need to return NoContent
         //    return NoContent();
         //}
 
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserUpdateDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(UserUpdateDTO userDTO)
+        {
+            var entity = await _userService.GetById(userDTO.Id);
+
+            if (entity == null)
+                return NotFound();
+
+            var user = await _userService.UpdateUser(entity, userDTO);
+            var userUpdate = _mapper.Map<UserUpdateDTO>(entity);
+            _unitOfWork.Commit();
+
+            return new OkObjectResult(userUpdate);
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             var user = await _genericRepository.GetById(id);
 
             if (user == null)
                 return BadRequest();
 
-            await _genericRepository.DeleteAsync(user);
-            _unitOfWork.Commit();
+            var deleted = _genericRepository.Delete_(user);
+
+            if (deleted)
+                _unitOfWork.Commit();
 
             return Ok(user);
         }
