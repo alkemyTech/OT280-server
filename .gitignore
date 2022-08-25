@@ -1,4 +1,4 @@
-Migrations/
+
 bin
 Debug
 
@@ -465,3 +465,4 @@ bin/Debug/net5.0
 
 **/appsettings.Development.json
 **/OngProject.xml
+OngProject/Migrations
