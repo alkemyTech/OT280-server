@@ -17,8 +17,13 @@ namespace OngProject.Core.Mapper
             CreateMap<EditMemberDTO, Members>();
             CreateMap<Members, EditMemberDTO>();
 
-            // Roles
+            //Categories
+            CreateMap<Categories, CategoryDTO>();
+            CreateMap<CategoryDTO, Categories>();
+            CreateMap<EditCategoryDTO, Categories>();
+            CreateMap<Categories, EditCategoryDTO>();
 
+            // Roles
             CreateMap<Roles, RoleDTO>();
             CreateMap<RoleDTO, Roles>();
             
