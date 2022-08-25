@@ -58,7 +58,7 @@ namespace OngProject.Controllers
             if (!result.Succeeded) 
                 return BadRequest(result.Errors);
 
-            return Ok(newUser);
+            return Ok(user);
         }
 
         private bool UserExists(string userName)
