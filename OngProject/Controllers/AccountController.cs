@@ -12,15 +12,12 @@ namespace OngProject.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        //public readonly ITokenService _tokenService;
         private readonly UserManager<Users> _userManager;
         private readonly SignInManager<Users> _signInManager;
         private readonly IMapper _mapper;
 
-
         public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper) 
         {
-            //_tokenService = tokenService;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
