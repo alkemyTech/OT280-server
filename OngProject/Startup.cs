@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using OngProject.DataAccess;
-using Microsoft.AspNetCore.Identity;
 using OngProject.Core.Models;
 using OngProject.Middleware;
 
@@ -25,7 +25,8 @@ namespace OngProject
         public void ConfigureServices(IServiceCollection services)
         {
             // For Identity
-            services.AddIdentity<Users, Roles>()
+            services.AddDefaultIdentity<Users>()
+                .AddRoles<Roles>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
