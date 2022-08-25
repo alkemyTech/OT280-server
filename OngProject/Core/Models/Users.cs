@@ -20,7 +20,7 @@ namespace OngProject.Core.Models
 
         [Timestamp]
         public byte[] RowVersion { get; set; }
-        public bool IsDeleted { get; set; }
 
+        public bool IsDeleted { get; set; }
     }
 }

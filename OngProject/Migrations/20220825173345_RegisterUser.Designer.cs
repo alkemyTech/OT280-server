@@ -10,8 +10,8 @@ using OngProject.DataAccess;
 namespace OngProject.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220825131230_addingModelActivity")]
-    partial class addingModelActivity
+    [Migration("20220825173345_RegisterUser")]
+    partial class RegisterUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
