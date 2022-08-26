@@ -10,8 +10,8 @@ using OngProject.DataAccess;
 namespace OngProject.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220825173345_RegisterUser")]
-    partial class RegisterUser
+    [Migration("20220826195628_pruebaSeedMembers")]
+    partial class pruebaSeedMembers
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -202,30 +202,30 @@ namespace OngProject.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("description")
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("facebookUrl")
+                    b.Property<string>("FacebookUrl")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("image")
+                    b.Property<string>("Image")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("instagramUrl")
+                    b.Property<string>("InstagramUrl")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("linkedinUrl")
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LinkedinUrl")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");

@@ -32,7 +32,6 @@ namespace OngProject.Core.Models
         [StringLength(100)]
         public string? image { get; set; }
 
-
         [Timestamp]
         public byte[] ChangeCheck { get; set; }
         public bool IsDeleted { get; set; }
