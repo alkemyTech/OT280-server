@@ -24,7 +24,6 @@ namespace OngProject.Controllers
             this._unitOfWork = unitOfWork;
             this._mapper = mapper;
         }
-
-        }
+        
     }
 }
