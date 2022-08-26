@@ -22,7 +22,9 @@ namespace OngProject.Middleware
             services.AddScoped<IActivityService, ActivityService>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
-
+            services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+            services.AddScoped<IOrganizationService, OrganizationService>();
+            
             services.AddAutoMapper(typeof(EntityMapper));
 
             return services;

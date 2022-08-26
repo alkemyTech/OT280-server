@@ -35,6 +35,8 @@ namespace OngProject.Core.Mapper
 
             CreateMap<Activities, ActivityDTO>();
             CreateMap<ActivityDTO, Activities>();
+
+            CreateMap<Organization, OrganizationDTO>();
         }
     }
 }
