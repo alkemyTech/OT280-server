@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
@@ -38,6 +40,25 @@ namespace OngProject.Controllers
             var organizationDTO = _mapper.Map<OrganizationDTO>(organization);
 
             return new OkObjectResult(organizationDTO);
+        }
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost("public")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditOrganizationDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(EditOrganizationDTO editOrganizationDTO)
+        {
+            var entity = await _organizationService.GetById(editOrganizationDTO.OrganizationId);
+
+            if (ModelState.IsValid && entity != null)
+            {
+                _organizationService.UpdateOrganization(entity, editOrganizationDTO);
+                _unitOfWork.Commit();
+
+                return new OkObjectResult(editOrganizationDTO);
+            }
+
+            return NotFound();
         }
     }
 }
