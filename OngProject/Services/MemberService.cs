@@ -16,12 +16,12 @@ namespace OngProject.Services
 
         public async Task<Members> UpdateMember(Members member, EditMemberDTO editMemberDTO)
         {            
-            member.name = editMemberDTO.name;
-            member.facebookUrl = editMemberDTO.facebookUrl;
-            member.instagramUrl = editMemberDTO.instagramUrl;
-            member.linkedinUrl = editMemberDTO.linkedinUrl;
-            member.image = editMemberDTO.image;
-            member.description = editMemberDTO.description;
+            member.Name = editMemberDTO.name;
+            member.FacebookUrl = editMemberDTO.facebookUrl;
+            member.InstagramUrl = editMemberDTO.instagramUrl;
+            member.LinkedinUrl = editMemberDTO.linkedinUrl;
+            member.Image = editMemberDTO.image;
+            member.Description = editMemberDTO.description;
 
             await _memberRepository.Update(member);
 
