@@ -19,6 +19,15 @@ namespace OngProject.Core.Models.DTOs
 
         [Phone(ErrorMessage = "El formato del campo debe corresponder al de un número telefonico")]
         [Range(0, 20, ErrorMessage = " El valor del campo debe ser un número entre 0 y 20")]
-        public int? Phone { get; set; }     
+        public int? Phone { get; set; }
+
+        [StringLength(256)]
+        public string FacebookUrl { get; set; }
+
+        [StringLength(256)]
+        public string LinkedinUrl { get; set; }
+
+        [StringLength(256)]
+        public string InstagramUrl { get; set; }
     }
 }
