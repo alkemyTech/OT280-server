@@ -21,14 +21,14 @@ namespace OngProject.Core.Models
 
         [Required(ErrorMessage = "El campo Name es requerido")]
         [StringLength(50)]
-        public string name { get; set; }
+        public string Name { get; set; }
 
         [DataType(DataType.MultilineText)]
-        public string? content { get; set; }
+        public string? Content { get; set; }
 
         [Required(ErrorMessage = "El campo Image es requerido")]
         [StringLength(100)]
-        public string image { get; set; }
+        public string Image { get; set; }
 
         [Timestamp]
         public byte[] ChangeCheck { get; set; }
@@ -40,7 +40,7 @@ namespace OngProject.Core.Models
         //uno a muchos (Categories a News)
 
         [ForeignKey("Categories")]
-        public int categoryId { get; set; }
+        public int CategoryId { get; set; }
         public Categories Categories { get; set; }
     }
 }

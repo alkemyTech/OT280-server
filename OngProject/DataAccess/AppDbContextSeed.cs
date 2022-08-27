@@ -93,5 +93,53 @@ namespace OngProject.DataAccess
             }
             await context.SaveChangesAsync();
         }
+
+        public static async Task SeedCategories(AppDbContext context)
+        {
+            if (!context.Categories.Any())
+            {
+                context.Categories.Add(new Categories
+                {
+                    Name = "Educación",
+                    Description = "Educación",
+                    Image = "",
+                    //byte[] ChangeCheck 
+                    //bool IsDeleted 
+                    //ICollection <News> News { get; set; }
+                    //consultar si agrego las novedades
+                });
+                context.Categories.Add(new Categories
+                {
+                    Name = "Deportes",
+                    Description = "Deportes",
+                    Image = "",
+                });
+                context.Categories.Add(new Categories
+                {
+                    Name = "Primera infancia",
+                    Description = "Primera infancia",
+                    Image = "",
+                });
+                context.Categories.Add(new Categories
+                {
+                    Name = "Salud",
+                    Description = "Salud",
+                    Image = "",
+                });
+                context.Categories.Add(new Categories
+                {
+                    Name = "Alimentación",
+                    Description = "Alimentación",
+                    Image = "",
+                });
+                context.Categories.Add(new Categories
+                {
+                    Name = "Trabajo Social",
+                    Description = "Trabajo Social",
+                    Image = "",
+                });
+            }
+            await context.SaveChangesAsync();
+        }
     }
 }
