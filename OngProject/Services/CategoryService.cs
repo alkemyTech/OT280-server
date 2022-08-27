@@ -8,7 +8,7 @@ namespace OngProject.Services
 {
     public class CategoryService : GenericService<Categories>, ICategoryService
     {
-        private ICategoryRepository _categoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
         public CategoryService(ICategoryRepository categoryRepository) : base(categoryRepository)
         {
             this._categoryRepository = categoryRepository;
@@ -16,9 +16,9 @@ namespace OngProject.Services
 
         public async Task<Categories> UpdateCategory(Categories category, EditCategoryDTO editCategoryDTO)
         {
-            category.name = editCategoryDTO.Name;
-            category.description = editCategoryDTO.Description;
-            category.image = editCategoryDTO.Image;
+            category.Name = editCategoryDTO.Name;
+            category.Description = editCategoryDTO.Description;
+            category.Image = editCategoryDTO.Image;
 
             await _categoryRepository.Update(category);
 
