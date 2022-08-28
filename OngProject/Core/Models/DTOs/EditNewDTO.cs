@@ -4,6 +4,9 @@ namespace OngProject.Core.Models.DTOs
 {
     public class EditNewDTO
     {
+        [Required]
+        public int NewId { get; set; }
+
         [Required(ErrorMessage = "El campo Name es requerido")]
         [StringLength(50)]
         public string Name { get; set; }
