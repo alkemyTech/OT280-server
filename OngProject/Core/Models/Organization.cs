@@ -61,5 +61,17 @@ namespace OngProject.Core.Models
         [Timestamp]
         public byte[] ChangeCheck { get; set; }
         public bool IsDeleted { get; set; }
+
+
+        [StringLength(256)]
+        public string FacebookUrl { get; set; }
+
+
+        [StringLength(256)]
+        public string LinkedinUrl { get; set; }
+
+
+        [StringLength(256)]
+        public string InstagramUrl { get; set; }
     }
 }
