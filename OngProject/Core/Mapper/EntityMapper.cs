@@ -21,8 +21,6 @@ namespace OngProject.Core.Mapper
             // Categories
             CreateMap<Categories, CategoryDTO>();
             CreateMap<CategoryDTO, Categories>();
-            CreateMap<CategoryEditDTO, Categories>();
-            CreateMap<Categories, CategoryEditDTO>();
             CreateMap<Categories, CategoryGetAllNamesResponse>();
             CreateMap<CategoryGetAllNamesResponse, Categories>();
 
