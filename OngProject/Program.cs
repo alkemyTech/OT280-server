@@ -30,8 +30,11 @@ namespace OngProject
 
                     var userManager = services.GetRequiredService<UserManager<Users>>();
                     var roleManager = services.GetRequiredService<RoleManager<Roles>>();
+                    var context = services.GetRequiredService<AppDbContext>();
 
                     await AppDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
+                    await AppDbContextSeed.SeedMembers(context);
+                    await AppDbContextSeed.SeedCategories(context);
 
                 }
                 catch (Exception e)

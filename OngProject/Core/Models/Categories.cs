@@ -24,13 +24,13 @@ namespace OngProject.Core.Models
 
         [Required(ErrorMessage = "El campo Name es requerido")]
         [StringLength(50)]
-        public string name { get; set; }
+        public string Name { get; set; }
 
         [DataType(DataType.MultilineText)]
-        public string? description { get; set; }
+        public string? Description { get; set; }
 
         [StringLength(100)]
-        public string? image { get; set; }
+        public string? Image { get; set; }
 
         [Timestamp]
         public byte[] ChangeCheck { get; set; }
