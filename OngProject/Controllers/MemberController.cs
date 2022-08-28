@@ -25,6 +25,15 @@ namespace OngProject.Controllers
             this._mapper = mapper;
         }
 
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para el manejo de la creacion de Members.Se debe ser ADMINISTRADOR 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
         [HttpPost]
         public async Task<IActionResult> Create(MemberDTO member)
         {
@@ -41,7 +50,16 @@ namespace OngProject.Controllers
 
             return Created("Created", new { Response = StatusCode(201) });
         }
-
+        
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para el manejo de la creacion de Members.Se debe ser ADMINISTRADOR 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -55,7 +73,16 @@ namespace OngProject.Controllers
 
             return Ok(member);
         }
-
+        
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para obtener la lista de los Members existentes.Se debe ser usuario ADMINISTRADOR/STANDARD 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MemberDTO>))]
         public async Task<IActionResult> GetAll()
@@ -65,7 +92,16 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(membersDTO);
         }
-
+        
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para obtener un member por id.Se debe ser ADMINISTRADOR 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MemberDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -82,7 +118,16 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(memberDTO);
         }
-
+        
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para actualizar un member que se consigue al buscarlo por id.Se debe ser ADMINISTRADOR 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditMemberDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
