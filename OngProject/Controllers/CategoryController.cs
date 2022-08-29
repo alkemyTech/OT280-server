@@ -89,5 +89,19 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(categoryDTO);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var category = await _categoryService.GetById(id);
+
+            if (category == null)
+                return BadRequest();
+
+            await _categoryService.DeleteAsync(category);
+            _unitOfWork.Commit();
+
+            return Ok(category);
+        }
     }
 }
