@@ -7,6 +7,8 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using OngProject.Core.Helper;
 
 namespace OngProject.Controllers
 {
@@ -20,9 +22,59 @@ namespace OngProject.Controllers
 
         public MemberController(IMemberService memberService, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._memberService = memberService;
-            this._unitOfWork = unitOfWork;
-            this._mapper = mapper;
+            _memberService = memberService;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+        }
+        
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para obtener la lista de los Members existentes.Se debe ser usuario ADMINISTRADOR/STANDARD 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MemberDTO>))]
+        public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
+        {
+            //Paginacion
+            var queryable = _unitOfWork.Context.Members.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDto.CantidadRegistroPorPagina);
+                
+            //var members = await _memberService.GetAllAsync();
+            var members = await queryable.Paginar(paginacionDto).ToListAsync();
+            var membersDTO = _mapper.Map<IEnumerable<MemberDTO>>(members);
+
+            return new OkObjectResult(membersDTO);
+        }
+        
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para obtener un member por id.Se debe ser ADMINISTRADOR 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MemberDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var member = await _memberService.GetById(id);
+
+            if (member == null)
+            {
+                return NotFound();
+            }
+
+            var memberDTO = _mapper.Map<MemberDTO>(member);
+
+            return new OkObjectResult(memberDTO);
         }
 
         #region Documentacion
@@ -73,52 +125,7 @@ namespace OngProject.Controllers
 
             return Ok(member);
         }
-        
-        #region Documentacion
-        
-        /// <summary>
-        /// Endpoint para obtener la lista de los Members existentes.Se debe ser usuario ADMINISTRADOR/STANDARD 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
-        #endregion
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MemberDTO>))]
-        public async Task<IActionResult> GetAll()
-        {
-            var members = await _memberService.GetAllAsync();
-            var membersDTO = _mapper.Map<IEnumerable<MemberDTO>>(members);
 
-            return new OkObjectResult(membersDTO);
-        }
-        
-        #region Documentacion
-        
-        /// <summary>
-        /// Endpoint para obtener un member por id.Se debe ser ADMINISTRADOR 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
-        #endregion
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MemberDTO))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var member = await _memberService.GetById(id);
-
-            if (member == null)
-            {
-                return NotFound();
-            }
-
-            var memberDTO = _mapper.Map<MemberDTO>(member);
-
-            return new OkObjectResult(memberDTO);
-        }
-        
         #region Documentacion
         
         /// <summary>

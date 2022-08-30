@@ -34,7 +34,7 @@ namespace OngProject.DataAccess
                 {
                     FirstName = "FirstName " + i,
                     LastName = "LastName " + i,
-                    Email = "Email" + i + "example.com",
+                    Email = "Email" + i + "@example.com",
                     UserName = "admin"+i,
                     Photo = null,
                 };
@@ -52,7 +52,7 @@ namespace OngProject.DataAccess
                 {
                     FirstName = "FirstName " + i,
                     LastName = "LastName " + i,
-                    Email = "Email" + i + "example.com",
+                    Email = "Email" + i + "@example.com",
                     UserName = "standard"+i,
                     Photo = null,
                 };

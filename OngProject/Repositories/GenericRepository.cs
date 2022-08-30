@@ -18,10 +18,7 @@ namespace OngProject.Repositories
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await _unitOfWork.Context.Set<T>().ToListAsync();
-        }
+        public async Task<IEnumerable<T>> GetAllAsync() => await _unitOfWork.Context.Set<T>().ToListAsync();
 
         public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> whereCondition = null, 
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 

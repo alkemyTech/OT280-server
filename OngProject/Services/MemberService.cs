@@ -11,7 +11,7 @@ namespace OngProject.Services
         private IMemberRepository _memberRepository;
         public MemberService(IMemberRepository memberRepository) : base(memberRepository)
         {
-            this._memberRepository = memberRepository;
+            _memberRepository = memberRepository;
         }
 
         public async Task<Members> UpdateMember(Members member, EditMemberDTO editMemberDTO)
