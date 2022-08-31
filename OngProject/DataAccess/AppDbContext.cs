@@ -18,6 +18,7 @@ namespace OngProject.DataAccess
         public DbSet<Organization> Organization { get; set; }
         public DbSet<Activities> Activities { get; set; }
         public DbSet<Testimonials> Testimonials { get; set; }
+        public DbSet<Slide> Slides { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
