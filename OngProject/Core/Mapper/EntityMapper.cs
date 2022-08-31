@@ -38,6 +38,9 @@ namespace OngProject.Core.Mapper
             CreateMap<ActivityDTO, Activities>();
 
             CreateMap<Organization, OrganizationDTO>();
+
+            CreateMap<Testimonials, TestimonialDTO>();
+            CreateMap<TestimonialDTO, Testimonials>();
         }
     }
 }
