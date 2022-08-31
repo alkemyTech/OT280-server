@@ -23,6 +23,22 @@ namespace OngProject.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Login de usuario registrado al sistema. Rol: admin | standard
+        /// </summary>
+        /// <returns>Token de acceso</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /auth/login
+        ///     {
+        ///         "email": "user@example.com",
+        ///         "password": "Password@123"
+        ///     }
+        ///
+        /// </remarks>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
         [HttpPost("login")]
         public async Task<ActionResult<Users>> Login(LoginUserDTO login)
         {
@@ -37,6 +53,25 @@ namespace OngProject.Controllers
             return Ok(user);
         }
 
+        /// <summary>
+        /// Registro de nuevo usuario standard al sistema.
+        /// </summary>
+        /// <returns>JSON del usuario registrado</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /auth/register
+        ///     {
+        ///         "userName": "marita",
+        ///         "firstName": "Marita",
+        ///         "lastName": "Gómez",
+        ///         "email": "maritagomez@gmail.com",
+        ///         "passwordHash": "Password@123"
+        ///     }
+        ///
+        /// </remarks>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
         [HttpPost("register")]
         public async Task<ActionResult<Users>> Register([FromBody] UserDTO user)
         {

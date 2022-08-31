@@ -9,6 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using OngProject.DataAccess;
 using OngProject.Core.Models;
 using OngProject.Middleware;
+using Microsoft.Extensions.Options;
+using System.IO;
+using System.Reflection;
+using System;
 
 namespace OngProject
 {
@@ -38,8 +42,12 @@ namespace OngProject
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OngProject", Version = "v1" });
+           
+                // using System.Reflection;
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
-
+            
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));            
         }
