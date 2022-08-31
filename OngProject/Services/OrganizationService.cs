@@ -15,13 +15,13 @@ namespace OngProject.Services
 
         public async void UpdateOrganization(Organization organization, EditOrganizationDTO editOrganizationDTO)
         {
-            organization.name = editOrganizationDTO.Name;
-            organization.image = editOrganizationDTO.Image;
-            organization.address = editOrganizationDTO.Address;
-            organization.phone = editOrganizationDTO.Phone;
-            organization.email = editOrganizationDTO.Email;
-            organization.welcomeText = editOrganizationDTO.WelcomeText;
-            organization.aboutUsText = editOrganizationDTO.AboutUsText;
+            organization.Name = editOrganizationDTO.Name;
+            organization.Image = editOrganizationDTO.Image;
+            organization.Address = editOrganizationDTO.Address;
+            organization.Phone = editOrganizationDTO.Phone;
+            organization.Email = editOrganizationDTO.Email;
+            organization.WelcomeText = editOrganizationDTO.WelcomeText;
+            organization.AboutUsText = editOrganizationDTO.AboutUsText;
 
             await _organizationRepository.Update(organization);
         }

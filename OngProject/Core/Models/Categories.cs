@@ -27,10 +27,10 @@ namespace OngProject.Core.Models
         public string Name { get; set; }
 
         [DataType(DataType.MultilineText)]
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         [StringLength(100)]
-        public string? Image { get; set; }
+        public string Image { get; set; }
 
         [Timestamp]
         public byte[] ChangeCheck { get; set; }
