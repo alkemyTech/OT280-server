@@ -24,7 +24,7 @@ namespace OngProject.Core.Models
         public string Name { get; set; }
 
         [DataType(DataType.MultilineText)]
-        public string? Content { get; set; }
+        public string Content { get; set; }
 
         [Required(ErrorMessage = "El campo Image es requerido")]
         [StringLength(100)]

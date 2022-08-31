@@ -26,36 +26,36 @@ namespace OngProject.Core.Models
 
         [Required(ErrorMessage = "El campo Name es requerido")]
         [StringLength(50)]
-        public string name { get; set; }
+        public string Name { get; set; }
 
 
         [Required(ErrorMessage = "El campo Image es requerido")]
         [StringLength(100)]
-        public string image { get; set; }
+        public string Image { get; set; }
 
 
         [StringLength(100)]
-        public string? address { get; set; }
+        public string Address { get; set; }
 
         [Phone(ErrorMessage = "El formato del campo debe corresponder al de un número telefonico")]
         [Range(0, 20, ErrorMessage = " El valor del campo debe ser un número entre 0 y 20")]
-        public int? phone { get; set; }
+        public int? Phone { get; set; }
 
 
         [Required(ErrorMessage = "El campo email es requerido")]
         [StringLength(100)]
         [EmailAddress(ErrorMessage = "El campo debe contener un formato de email")]
-        public string email { get; set; }
+        public string Email { get; set; }
 
 
         [Required(ErrorMessage = "El campo welcomeText es requerido")]
         [StringLength(100)]
-        public string welcomeText { get; set; }
+        public string WelcomeText { get; set; }
 
 
         [Required(ErrorMessage = "El campo aboutUsText es requerido")]
         [StringLength(100)]
-        public string aboutUsText { get; set; }
+        public string AboutUsText { get; set; }
 
 
         [Timestamp]
