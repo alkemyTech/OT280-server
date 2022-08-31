@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
-using OngProject.Core.Models.DTOs.Category;
 using OngProject.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace OngProject.Controllers
 {
+    //[Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -31,7 +31,7 @@ namespace OngProject.Controllers
         /// <response code="200">Solicitud concretada con exito</response>
         /// <response code="401">Credenciales no válidas</response>
         /// <response code="403">Usuario no autorizado</response>
-        /// <response code="404">Recurso no encontrado</response>        //[Authorize(Roles="Admin")]
+        /// <response code="404">Recurso no encontrado</response>
         [HttpGet]
         public async Task<IEnumerable<Users>> Get()
         {
@@ -46,9 +46,6 @@ namespace OngProject.Controllers
         /// <response code="401">Credenciales no válidas</response>
         /// <response code="403">Usuario no autorizado</response>
         /// <response code="404">Recurso no encontrado</response>
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Users))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[Authorize(Roles="Admin")]
         [HttpGet("{id}")]
         public async Task<IEnumerable<Users>> GetById(string id)
         {
@@ -66,7 +63,6 @@ namespace OngProject.Controllers
         /// <response code="401">Credenciales no válidas</response>
         /// <response code="403">Usuario no autorizado</response>
         /// <response code="404">Recurso no encontrado</response>
-        //[Authorize(Roles="Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Users users)
         {
@@ -104,7 +100,6 @@ namespace OngProject.Controllers
         /// <response code="401">Credenciales no válidas</response>
         /// <response code="403">Usuario no autorizado</response>
         /// <response code="404">Recurso no encontrado</response>
-        //[Authorize(Roles="Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
