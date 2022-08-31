@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace OngProject.Controllers
 {
+    //[Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -23,13 +24,28 @@ namespace OngProject.Controllers
             this._unitOfWork = unitOfWork;
         }
 
-        [Authorize(Roles="Admin")]
+        /// <summary>
+        /// Lista todos los usuarios existentes en el sistema. Rol: admin
+        /// </summary>
+        /// <returns>Lista de usuarios como Users[]</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+        /// <response code="403">Usuario no autorizado</response>
+        /// <response code="404">Recurso no encontrado</response>
         [HttpGet]
         public async Task<IEnumerable<Users>> Get()
         {
             return await _genericRepository.GetAllAsync();
         }
 
+        /// <summary>
+        /// Se obtiene los datos de un usuario por su id. Rol: admin
+        /// </summary>
+        /// <returns>Objeto de la clase Users</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+        /// <response code="403">Usuario no autorizado</response>
+        /// <response code="404">Recurso no encontrado</response>
         [HttpGet("{id}")]
         public async Task<IEnumerable<Users>> GetById(string id)
         {
@@ -39,6 +55,14 @@ namespace OngProject.Controllers
             return (IEnumerable<Users>)Ok(user);
         }
 
+        /// <summary>
+        /// Creación de un ususario. Rol: admin
+        /// </summary>
+        /// <returns>Código HTTP con el resultado de la operacion</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+        /// <response code="403">Usuario no autorizado</response>
+        /// <response code="404">Recurso no encontrado</response>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Users users)
         {
@@ -68,6 +92,14 @@ namespace OngProject.Controllers
         //    return NoContent();
         //}
 
+        /// <summary>
+        /// Borra un usuario del sistema por su id. Rol: admin
+        /// </summary>
+        /// <returns>JSON del usuario borrado</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+        /// <response code="403">Usuario no autorizado</response>
+        /// <response code="404">Recurso no encontrado</response>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
