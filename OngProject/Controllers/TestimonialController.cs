@@ -40,6 +40,23 @@ namespace OngProject.Controllers
 
             return Created("Created", new { Response = StatusCode(201) });
         }
+
+        [HttpPut]
+        [Route("/testimonials/{id}")]
+        public async Task<ActionResult> Update(int id, TestimonialDTO testimonial)
+        {
+            var entity = await _testimonialService.GetById(id);
+
+            if (ModelState.IsValid && entity != null)
+            {
+                _testimonialService.UpdateTestimonial(entity, testimonial);
+                _unitOfWork.Commit();
+
+                return new OkObjectResult(testimonial);
+            }
+
+            return NotFound();
+        }
     }
 
     

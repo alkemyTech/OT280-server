@@ -13,7 +13,7 @@ namespace OngProject.Services
             this._testimonialRepository = testimonialRepository;
         }
 
-        public async void UpdateTestimonial(Testimonials testimonial, EditTestimonialDTO editTestimonialDTO)
+        public async void UpdateTestimonial(Testimonials testimonial, TestimonialDTO editTestimonialDTO)
         {
             testimonial.Name = editTestimonialDTO.Name;
             testimonial.Image = editTestimonialDTO.Image;
