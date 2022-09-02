@@ -8,6 +8,9 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using OngProject.Core.Helper;
+using OngProject.Core.Models.DTOs;
 
 namespace OngProject.Controllers
 {
@@ -29,9 +32,13 @@ namespace OngProject.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryGetAllNamesResponse>))]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
         {
-            var categories = await _categoryService.GetAllAsync();
+            //Paginacion
+            var queryable = _unitOfWork.Context.Categories.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDto.CantidadRegistroPorPagina);
+            
+            var categories = await queryable.Paginar(paginacionDto).ToListAsync();
             var categoriesDTO = _mapper.Map<IEnumerable<CategoryGetAllNamesResponse>>(categories);
 
             return new OkObjectResult(categoriesDTO);
