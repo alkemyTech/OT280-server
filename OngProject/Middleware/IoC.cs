@@ -26,6 +26,8 @@ namespace OngProject.Middleware
             services.AddScoped<IOrganizationService, OrganizationService>();
             services.AddScoped<ITestimonialRepository, TestimonialRepository>();
             services.AddScoped<ITestimonialService, TestimonialService>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<ICommentService, CommentService>();
 
             services.AddAutoMapper(typeof(EntityMapper));
 
