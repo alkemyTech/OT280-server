@@ -5,6 +5,6 @@ namespace OngProject.Services.Interfaces
 {
     public interface ITestimonialService : IGenericService<Testimonials>
     {
-        void UpdateTestimonial(Testimonials testimonial, EditTestimonialDTO editTestimonialDTO);
+        void UpdateTestimonial(Testimonials testimonial, TestimonialDTO editTestimonialDTO);
     }
 }
