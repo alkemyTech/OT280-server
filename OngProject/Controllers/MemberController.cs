@@ -106,7 +106,7 @@ namespace OngProject.Controllers
         #region Documentacion
         
         /// <summary>
-        /// Endpoint para el manejo de la creacion de Members.Se debe ser ADMINISTRADOR 
+        /// Endpoint que borra un member que se busca por su id.Se debe ser ADMINISTRADOR 
         /// </summary>
         /// <response code="200">Solicitud concretada con exito</response>
         /// <response code="401">Credenciales no validas</response>
