@@ -30,6 +30,16 @@ namespace OngProject.Controllers
             this._mapper = mapper;
         }
 
+        #region Documentacion
+
+        /// <summary>
+        /// Endpoint para listar todas las categorias existentes en el sistema. Rol: ADMIN
+        /// </summary>
+        /// <returns>Lista de categorias como Categories[]</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+
+        #endregion
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryGetAllNamesResponse>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
@@ -44,6 +54,16 @@ namespace OngProject.Controllers
             return new OkObjectResult(categoriesDTO);
         }
 
+        #region Documentacion
+
+        /// <summary>
+        /// Endpoint para obtener los datos de una categoria por su id. Rol: ADMIN
+        /// </summary>
+        /// <returns>Objeto de la clase Categories</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+
+        #endregion
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -61,6 +81,16 @@ namespace OngProject.Controllers
             return new OkObjectResult(categoryDTO);
         }
 
+        #region Documentacion
+
+        /// <summary>
+        /// Endpoint para el manejo de la creacion de Categorias. Rol: ADMIN
+        /// </summary>
+        /// <returns>Código HTTP con el resultado de la operacion</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+
+        #endregion
         [HttpPost]
         public async Task<IActionResult> Create(CategoryDTO categoryDTO)
         {
@@ -77,7 +107,16 @@ namespace OngProject.Controllers
 
             return Created("Created", new { Response = StatusCode(201) });
         }
-
+        
+        #region Documentacion
+        
+        /// <summary>
+        /// Endpoint para actualizar una category que se consigue al buscarlo por id.Rol: ADMIN
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        
+        #endregion
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -97,6 +136,15 @@ namespace OngProject.Controllers
             return new OkObjectResult(categoryDTO);
         }
 
+        #region Documentacion
+
+        /// <summary>
+        /// Endpoint que elimina una category del sistema por su id. Rol: ADMIN
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+
+        #endregion
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
