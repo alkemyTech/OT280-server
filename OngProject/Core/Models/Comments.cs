@@ -13,15 +13,15 @@ namespace OngProject.Core.Models
 
         [ForeignKey("Users")]
         [Required]
-        public string UserId { get; set; }
+        public string user_id { get; set; }
         public Users Users { get; set; }
 
         [Required(ErrorMessage = "Comment body is required")]
         [RequiredNotEmpty]
-        public string Body { get; set; }
+        public string body { get; set; }
 
         [ForeignKey("News")]
-        public int NewId { get; set; }
+        public int news_id { get; set; }
         public News News { get; set; }
 
     }

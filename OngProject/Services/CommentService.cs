@@ -15,7 +15,7 @@ namespace OngProject.Services
 
         public async void UpdateComment(Comments comment, CommentDTO commentDTO)
         {
-            comment.Body = commentDTO.body;
+            comment.body = commentDTO.body;
 
             await _commentRepository.Update(comment);
 
