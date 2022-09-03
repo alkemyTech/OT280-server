@@ -6,20 +6,14 @@ namespace OngProject.Core.Models.DTOs
 {
     public class CommentDTO
     {
-        [Required(ErrorMessage = "Comment body is required")]
-        [RequiredNotEmpty(ErrorMessage = "Comment body cannot be empty")]
+        [Required(ErrorMessage = "news_id is required")]
+        public int news_id { get; set; }
+
+        [Required(ErrorMessage = "user_id is required")]
+        public string user_id { get; set; }
+
+        [Required(ErrorMessage = "Comment body cannot be empty or null")]
         public string body { get; set; }
 
-    }
-
-    public class RequiredNotEmptyAttribute : RequiredAttribute
-    {
-        public override bool IsValid(object value)
-        {
-            if (value is string) 
-                return !String.IsNullOrEmpty((string)value);
-
-            return base.IsValid(value);
-        }
     }
 }
