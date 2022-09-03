@@ -1,14 +1,17 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OngProject.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     [ApiController]
     public class TestimonialController : ControllerBase
     {
@@ -56,6 +59,17 @@ namespace OngProject.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpGet]
+        [Route("api/testimonials")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TestimonialDTO>))]
+        public async Task<IActionResult> GetAll()
+        {
+            var testimonials = await _testimonialService.GetAllAsync();
+            var testimonialsDTO = _mapper.Map<IEnumerable<TestimonialDTO>>(testimonials);
+
+            return new OkObjectResult(testimonialsDTO);
         }
     }
 
