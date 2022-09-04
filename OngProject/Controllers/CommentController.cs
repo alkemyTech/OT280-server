@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
@@ -54,6 +55,35 @@ namespace OngProject.Controllers
                 _unitOfWork.Commit();
 
             return Created("Created", new { Response = StatusCode(201) });
+        }
+
+        [HttpPut]
+        [Route("/comments/{id}")]
+        //[Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentDTO))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(int id, CommentDTO commentDTO)
+        {
+            var entity = await _commentService.GetById(id);
+
+            var user = await _userService.GetById(commentDTO.user_id);
+
+            if (ModelState.IsValid && entity != null)
+            {
+                if (user == null || entity.user_id != user.Id)
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                else
+                {
+                    _commentService.UpdateComment(entity, commentDTO);
+                    _unitOfWork.Commit();
+                    return new OkObjectResult(commentDTO);
+                }
+            }
+            else
+            {
+                return NotFound();
+            }               
         }
     }
 }
