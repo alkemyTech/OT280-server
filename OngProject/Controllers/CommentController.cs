@@ -57,6 +57,21 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByNewId(int id)
+        {
+            var comment = await _commentService.GetAsync(x => x.news_id == id, null, "");
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return new OkObjectResult(comment);
+        }
+
         [HttpPut]
         [Route("/comments/{id}")]
         //[Authorize(Roles = "admin")]
