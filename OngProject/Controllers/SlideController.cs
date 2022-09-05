@@ -161,7 +161,7 @@ namespace OngProject.Controllers
 
             var result = await _amazonS3.PutObjectAsync(putRequest);
             //return Ok(result);
-            if (result.HttpStatusCode.ToString() != "Ok")
+            if (result.HttpStatusCode.ToString() != "OK")
                 return BadRequest();
 
 
