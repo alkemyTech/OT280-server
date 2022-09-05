@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System.IO;
 using System.Reflection;
 using System;
+using Amazon.S3;
 
 namespace OngProject
 {
@@ -38,6 +39,9 @@ namespace OngProject
 
             //Injection of services
             IoC.AddDependency(services);
+
+            //AWS S3
+            services.AddAWSService<IAmazonS3>();
 
             services.AddSwaggerGen(c =>
             {
