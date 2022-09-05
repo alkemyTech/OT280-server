@@ -71,6 +71,21 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(testimonialsDTO);
         }
+
+        [HttpDelete]
+        [Route("/testimonials/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var testimonials = await _testimonialService.GetById(id);
+
+            if (testimonials == null)
+                return BadRequest();
+
+            _testimonialService.DeleteTestimonial(testimonials);
+            _unitOfWork.Commit();
+
+            return Ok(testimonials);
+        }
     }
 
     
