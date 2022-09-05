@@ -80,10 +80,35 @@ namespace OngProject.Controllers
                     return new OkObjectResult(commentDTO);
                 }
             }
-            else
+            
+            return NotFound();                         
+        }
+
+        [HttpDelete]
+        [Route("/comments/{id}")]
+        //[Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentDTO))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id, DeleteCommentDTO commentDTO)
+        {
+            var entity = await _commentService.GetById(id);
+
+            var user = await _userService.GetById(commentDTO.user_id);
+
+            if (ModelState.IsValid && entity != null)
             {
-                return NotFound();
-            }               
+                if (user == null || entity.user_id != user.Id)
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                else
+                {
+                    await _commentService.DeleteAsync(entity);
+                    _unitOfWork.Commit();
+                    return Ok();
+                }
+            }
+
+            return NotFound();
         }
     }
 }
