@@ -11,8 +11,6 @@ using System.IO;
 using System.Linq;
 using OngProject.Core.Models.DTOs.Slide;
 using System;
-using System.Drawing;
-
 
 namespace OngProject.Controllers
 {
@@ -25,29 +23,34 @@ namespace OngProject.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IAmazonS3 _amazonS3;
+        private readonly IAWSS3Service _awsS3Service;
 
         public SlideController(ISlideService slideService,
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IAmazonS3 amazonS3)
+            IAmazonS3 amazonS3,
+            IAWSS3Service awsS3Service)
         {
             _slideService = slideService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _amazonS3 = amazonS3;
+            _awsS3Service = awsS3Service;
         }
 
-        public string BucketName = "cohorte-agosto-38d749a7";
+        //public string BucketName = "cohorte-agosto-38d749a7";
 
-        // test para ver la urls
-        [HttpGet("testUrls")]
+        // test para ver la urls, tiene time expire
+        [HttpGet("GetUrls")]
         public async Task<IActionResult> GetList(string prefix)
         {
-            var request = new ListObjectsV2Request()
-            {
-                BucketName = BucketName,
-                Prefix = prefix
-            };
+            var request = _awsS3Service.ListObjectV2(prefix);
+            //var request = new ListObjectsV2Request()
+            //{
+            //    BucketName = BucketName,
+            //    Prefix = prefix
+            //};
+
             var response = await _amazonS3.ListObjectsV2Async(request);
             var preSignedUrls = response.S3Objects.Select(o =>
             {
@@ -96,23 +99,19 @@ namespace OngProject.Controllers
             return new OkObjectResult(slideDTO);
         }
 
-        [HttpPost("CreateIFormFile")]
-        public async Task<IActionResult> Create(IFormFile file)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest();
+        // prueba con IFormFile OK
+        // La tarea dice usar string Base64
+        //[HttpPost("CreateIFormFile")]
+        //public async Task<IActionResult> Create(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest();
 
-            var putRequest = new PutObjectRequest()
-            {
-                BucketName = BucketName,
-                Key = file.FileName,
-                InputStream = file.OpenReadStream(),
-                ContentType = file.ContentType,
-            };
+        //    var putRequest = _awsS3Service.PutRequest(file);
 
-            var result = await _amazonS3.PutObjectAsync(putRequest);
-            return Ok(result);
-        }
+        //    var result = await _amazonS3.PutObjectAsync(putRequest);
+        //    return Ok(result);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> CreateSlide(SlideCreateDTO newSlide)
@@ -122,47 +121,14 @@ namespace OngProject.Controllers
 
             var _slide = _mapper.Map<Slide>(newSlide);
 
-            //byte[] bytes = Convert.FromBase64String(_slide.ImageUrl);
-            //using (MemoryStream ms = new(bytes))
-            //{
-            //    Image pic = Image.FromStream(ms);
-            //}
-            //var ms = new MemoryStream(bytes);
-            //var pic = Image.FromStream(ms);
-
-            //byte[] bytes = Convert.FromBase64String(newSlide.ImageBase64);
-            //using (MemoryStream stream = new(bytes))
-            //{
-            //    var file = new FormFile(stream, 0, stream.Length, null, newSlide.ImageName)
-            //    {
-            //        Headers = new HeaderDictionary(),
-            //        ContentType = "application/png"
-            //    };
-            //}
-
-            byte[] bytes = Convert.FromBase64String(newSlide.ImageBase64);
-            MemoryStream stream = new MemoryStream(bytes);
-
-            IFormFile file;
-            file = new FormFile(stream, 0, bytes.Length, newSlide.ImageName, newSlide.ImageName)
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = "image/png"
-            };
-
-
-            var putRequest = new PutObjectRequest()
-            {
-                BucketName = BucketName,
-                Key = file.FileName,
-                InputStream = file.OpenReadStream(),
-                ContentType = file.ContentType,
-            };
+            var putRequest = _awsS3Service.PutObjectRequestImageBase64(newSlide.ImageBase64, newSlide.ImageName);
 
             var result = await _amazonS3.PutObjectAsync(putRequest);
-            //return Ok(result);
+
             if (result.HttpStatusCode.ToString() != "OK")
                 return BadRequest();
+
+            _slide.ImageUrl = newSlide.ImageName;
 
 
             var created = await _slideService.CreateAsync(_slide);
@@ -173,22 +139,5 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
 
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Create(CategoryDTO categoryDTO)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    var _category = _mapper.Map<Categories>(categoryDTO);
-        //    var created = await _categoryService.CreateAsync(_category);
-
-        //    if (created)
-        //        _unitOfWork.Commit();
-
-        //    return Created("Created", new { Response = StatusCode(201) });
-        //}
-
     }
 }

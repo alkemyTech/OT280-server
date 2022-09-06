@@ -30,6 +30,7 @@ namespace OngProject.Middleware
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<ISlideRepository, SlideRepository>();
             services.AddScoped<ISlideService, SlideService>();
+            services.AddScoped<IAWSS3Service, AWSS3Service>();
 
             services.AddAutoMapper(typeof(EntityMapper));
 
