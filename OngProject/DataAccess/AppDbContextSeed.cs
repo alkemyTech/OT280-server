@@ -210,5 +210,33 @@ namespace OngProject.DataAccess
             
             await context.SaveChangesAsync();
         }
+
+        public static async Task SeedTestimonial(AppDbContext context)
+        {
+            if (!context.Testimonials.Any())
+            {
+                context.Testimonials.Add(new Testimonials
+                {
+                    Name = "Juan Cruz",
+                    Image = "Imagen1.png",
+                    Content = "Es una Ong muy recomendable",       
+                });
+                context.Testimonials.Add(new Testimonials
+                {
+                    Name = "Emma",
+                    Image = "Imagen2.png",
+                    Content = "Tuve una muy buena experiencia",
+                });
+                context.Testimonials.Add(new Testimonials
+                {
+                    Name = "Florencia",
+                    Image = "Imagen3.png",
+                    Content = "Me parece que este es una de esos proyectos que deben " +
+                              "recorrer el mundo, con un impacto tan real y tan grande que " +
+                              "deben ser un ejemplo para todos",
+                });
+            }
+            await context.SaveChangesAsync();
+        }
     }
 }
