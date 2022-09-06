@@ -28,6 +28,13 @@ namespace OngProject.Controllers
             _mapper = mapper;
         }
 
+        #region Documentacion
+        /// <summary>
+        /// Endpoint para el manejo de la creacion de Testimonios.Se debe ser ADMINISTRADOR
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        #endregion
         [HttpPost]
         [Route("/testimonials")]
         public async Task<IActionResult> Create(TestimonialDTO testimonial)
@@ -46,6 +53,13 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
+        #region Documentacion
+        /// <summary>
+        /// Endpoint para actualizar un testimonio que se consigue al buscarlo por id.Se debe ser ADMINISTRADOR 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        #endregion
         [HttpPut]
         [Route("/testimonials/{id}")]
         public async Task<ActionResult> Update(int id, TestimonialDTO testimonial)
@@ -63,6 +77,13 @@ namespace OngProject.Controllers
             return NotFound();
         }
 
+        #region Documentacion
+        /// <summary>
+        /// Endpoint para obtener la lista de los Testimonios existentes.Se debe ser usuario ADMINISTRADOR
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        #endregion
         [HttpGet]
         [Route("api/testimonials")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TestimonialDTO>))]
@@ -79,6 +100,13 @@ namespace OngProject.Controllers
             return new OkObjectResult(testimonialsDTO);
         }
 
+        #region Documentacion
+        /// <summary>
+        /// Endpoint que borra un testimonio que se busca por su id.Se debe ser ADMINISTRADOR 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no validas</response>
+        #endregion
         [HttpDelete]
         [Route("/testimonials/{id}")]
         public async Task<IActionResult> Delete(int id)
