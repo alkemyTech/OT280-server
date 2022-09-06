@@ -24,6 +24,7 @@ namespace OngProject.Controllers
         private readonly IMapper _mapper;
         private readonly IAmazonS3 _amazonS3;
         private readonly IAWSS3Service _awsS3Service;
+        private readonly string BucketName = "cohorte-agosto-38d749a7";
 
         public SlideController(ISlideService slideService,
             IUnitOfWork unitOfWork,
@@ -37,8 +38,6 @@ namespace OngProject.Controllers
             _amazonS3 = amazonS3;
             _awsS3Service = awsS3Service;
         }
-
-        //public string BucketName = "cohorte-agosto-38d749a7";
 
         // test para ver la urls, tiene time expire
         [HttpGet("GetUrls")]
