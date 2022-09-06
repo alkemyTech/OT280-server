@@ -24,7 +24,10 @@ namespace OngProject.Core.Models
         public int news_id { get; set; }
         public News News { get; set; }
 
+        public DateTime Date_Create { get; set; }
+
     }
+
     public class RequiredNotEmptyAttribute : RequiredAttribute
     {
         public override bool IsValid(object value)

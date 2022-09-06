@@ -39,78 +39,6 @@ namespace OngProject.Controllers
             _awsS3Service = awsS3Service;
         }
 
-        // test para ver la urls, tiene time expire
-        [HttpGet("GetUrls")]
-        public async Task<IActionResult> GetList(string prefix)
-        {
-            var request = _awsS3Service.ListObjectV2(prefix);
-            //var request = new ListObjectsV2Request()
-            //{
-            //    BucketName = BucketName,
-            //    Prefix = prefix
-            //};
-
-            var response = await _amazonS3.ListObjectsV2Async(request);
-            var preSignedUrls = response.S3Objects.Select(o =>
-            {
-                var request = new GetPreSignedUrlRequest()
-                {
-                    BucketName = BucketName,
-                    Key = o.Key,
-                    Expires = System.DateTime.UtcNow.AddSeconds(30)
-                };
-                return _amazonS3.GetPreSignedURL(request);
-            });
-
-            return Ok(preSignedUrls);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Get(string imageName)
-        {
-            var response = await _amazonS3.GetObjectAsync(BucketName, imageName);
-            return File(response.ResponseStream, response.Headers.ContentType);
-        }
-
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var slide = await _slideService.GetById(id);
-
-            if (slide == null)
-                return NotFound();
-
-            var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
-
-            var request = new GetPreSignedUrlRequest()
-            {
-                BucketName = BucketName,
-                Key = response.Key,
-                Expires = System.DateTime.UtcNow.AddSeconds(40)
-            };
-            var preSignedUrls = _amazonS3.GetPreSignedURL(request);
-
-
-            var slideDTO = _mapper.Map<SlideDTO>(slide);
-
-            return new OkObjectResult(slideDTO);
-        }
-
-        // prueba con IFormFile OK
-        // La tarea dice usar string Base64
-        //[HttpPost("CreateIFormFile")]
-        //public async Task<IActionResult> Create(IFormFile file)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
-
-        //    var putRequest = _awsS3Service.PutRequest(file);
-
-        //    var result = await _amazonS3.PutObjectAsync(putRequest);
-        //    return Ok(result);
-        //}
 
         [HttpPost]
         public async Task<IActionResult> CreateSlide(SlideCreateDTO newSlide)
@@ -136,7 +64,84 @@ namespace OngProject.Controllers
                 _unitOfWork.Commit();
 
             return Created("Created", new { Response = StatusCode(201) });
-
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Get(string imageName)
+        {
+            var response = await _amazonS3.GetObjectAsync(BucketName, imageName);
+            return File(response.ResponseStream, response.Headers.ContentType);
+        }
+
+        // test para ver la urls de una lista de objetos
+        // tiene time expire
+        [HttpGet("GetUrls")]
+        public async Task<IActionResult> GetList(string prefix)
+        {
+            var request = _awsS3Service.ListObjectV2(prefix);
+
+            var response = await _amazonS3.ListObjectsV2Async(request);
+            var preSignedUrls = response.S3Objects.Select(o =>
+            {
+                var request = new GetPreSignedUrlRequest()
+                {
+                    BucketName = BucketName,
+                    Key = o.Key,
+                    Expires = System.DateTime.UtcNow.AddSeconds(30)
+                };
+                return _amazonS3.GetPreSignedURL(request);
+            });
+
+            return Ok(preSignedUrls);
+        }
+
+        #region asignaron a otro compa la tarea
+        // Dejo comentado porque no esta terminado y puede ser util y se puede reutilizar.
+
+        //[HttpGet("{id}")]
+        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> GetById(int id)
+        //{
+        //    var slide = await _slideService.GetById(id);
+
+        //    if (slide == null)
+        //        return NotFound();
+
+        //    var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
+
+        //    var request = new GetPreSignedUrlRequest()
+        //    {
+        //        BucketName = BucketName,
+        //        Key = response.Key,
+        //        Expires = System.DateTime.UtcNow.AddSeconds(40)
+        //    };
+        //    var preSignedUrls = _amazonS3.GetPreSignedURL(request);
+
+
+        //    var slideDTO = _mapper.Map<SlideDTO>(slide);
+
+        //    return new OkObjectResult(slideDTO);
+        //}
+        #endregion
+
+        #region IFormFile
+        // Prueba con IFormFile OK
+        // La tarea dice usar string Base64 - analizar que es mas conveniente
+        // El string base64 es muy extenso.
+
+        //[HttpPost("CreateIFormFile")]
+        //public async Task<IActionResult> Create(IFormFile file)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest();
+
+        //    var putRequest = _awsS3Service.PutRequest(file);
+
+        //    var result = await _amazonS3.PutObjectAsync(putRequest);
+        //    return Ok(result);
+        //}
+        #endregion
+
     }
 }

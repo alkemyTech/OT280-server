@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
@@ -31,6 +35,20 @@ namespace OngProject.Controllers
             this._mapper = mapper;
         }
 
+        //[Authorize(Roles = "admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var commentsIQ = _unitOfWork.Context.Comments.AsQueryable();
+
+            commentsIQ = commentsIQ.OrderBy(c => c.Date_Create);
+
+            var comments = await commentsIQ.AsNoTracking().ToListAsync();
+            var commentDTO = _mapper.Map<IEnumerable<CommentGetAllDTO>>(comments);
+
+            return new OkObjectResult(commentDTO);
+        }
+
         //[Authorize(Roles = "standard")]
         [HttpPost]
         public async Task<IActionResult> Create(CommentDTO comment)
@@ -49,6 +67,9 @@ namespace OngProject.Controllers
                 return NotFound("User not found");
 
             var _comment = _mapper.Map<Comments>(comment);
+
+            _comment.Date_Create = DateTime.Now;
+
             var created = await _commentService.CreateAsync(_comment);
 
             if (created)
@@ -58,6 +79,7 @@ namespace OngProject.Controllers
         }
 
         [HttpGet]
+        [Route("~/news/{id}/comments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByNewId(int id)

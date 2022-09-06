@@ -3,10 +3,6 @@ using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Core.Models.DTOs.Category;
 using OngProject.Core.Models.DTOs.Slide;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OngProject.Core.Mapper
 {
@@ -45,12 +41,15 @@ namespace OngProject.Core.Mapper
 
             CreateMap<Comments, CommentDTO>();
             CreateMap<CommentDTO, Comments>();
+            CreateMap<Comments, CommentGetAllDTO>();
+            CreateMap<CommentGetAllDTO, Comments>();
 
             // Slides
             CreateMap<Slide, SlideDTO>();
             CreateMap<SlideDTO, Slide>();
             CreateMap<Slide, SlideCreateDTO>();
             CreateMap<SlideCreateDTO, Slide>();
+
         }
     }
 }
