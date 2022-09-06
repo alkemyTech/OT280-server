@@ -43,7 +43,9 @@ namespace OngProject.Core.Mapper
             CreateMap<TestimonialDTO, Testimonials>();
 
             CreateMap<Comments, CommentDTO>();
-            CreateMap<CommentDTO, Comments>();
+            CreateMap<CommentDTO, Comments>(); 
+            CreateMap<Comments, CommentGetAllDTO>();
+            CreateMap<CommentGetAllDTO, Comments>();
         }
     }
 }
