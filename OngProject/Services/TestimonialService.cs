@@ -2,6 +2,7 @@
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using System;
 
 namespace OngProject.Services
 {
@@ -19,6 +20,12 @@ namespace OngProject.Services
             testimonial.Image = editTestimonialDTO.Image;
             testimonial.Content = editTestimonialDTO.Content;
 
+            await _testimonialRepository.Update(testimonial);
+        }
+
+        public async void DeleteTestimonial(Testimonials testimonial)
+        {
+            testimonial.DeletedAt = DateTime.Now;
             await _testimonialRepository.Update(testimonial);
         }
     }

@@ -1,14 +1,19 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OngProject.Core.Helper;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OngProject.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     [ApiController]
     public class TestimonialController : ControllerBase
     {
@@ -56,6 +61,37 @@ namespace OngProject.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpGet]
+        [Route("api/testimonials")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TestimonialDTO>))]
+        public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
+        {
+            //Paginacion
+            var queryable = _unitOfWork.Context.Testimonials.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDto.CantidadRegistroPorPagina);
+
+            //var testimonials = await _testimonialService.GetAllAsync();
+            var testimonials = await queryable.Paginar(paginacionDto).ToListAsync();
+            var testimonialsDTO = _mapper.Map<IEnumerable<TestimonialDTO>>(testimonials);
+
+            return new OkObjectResult(testimonialsDTO);
+        }
+
+        [HttpDelete]
+        [Route("/testimonials/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var testimonials = await _testimonialService.GetById(id);
+
+            if (testimonials == null)
+                return BadRequest();
+
+            _testimonialService.DeleteTestimonial(testimonials);
+            _unitOfWork.Commit();
+
+            return Ok(testimonials);
         }
     }
 

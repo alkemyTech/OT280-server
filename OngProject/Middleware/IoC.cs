@@ -28,6 +28,10 @@ namespace OngProject.Middleware
             services.AddScoped<ITestimonialService, TestimonialService>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<INewRepository, NewRepository>();
+            services.AddScoped<INewService, NewService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISlideRepository, SlideRepository>();
             services.AddScoped<ISlideService, SlideService>();
             services.AddScoped<IAWSS3Service, AWSS3Service>();
