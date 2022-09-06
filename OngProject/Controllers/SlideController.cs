@@ -96,6 +96,7 @@ namespace OngProject.Controllers
         }
 
         #region asignaron a otro compa la tarea
+
         // Dejo comentado porque no esta terminado y puede ser util y se puede reutilizar.
 
         //[HttpGet("{id}")]
@@ -123,9 +124,11 @@ namespace OngProject.Controllers
 
         //    return new OkObjectResult(slideDTO);
         //}
+
         #endregion
 
         #region IFormFile
+
         // Prueba con IFormFile OK
         // La tarea dice usar string Base64 - analizar que es mas conveniente
         // El string base64 es muy extenso.
@@ -141,7 +144,22 @@ namespace OngProject.Controllers
         //    var result = await _amazonS3.PutObjectAsync(putRequest);
         //    return Ok(result);
         //}
+
         #endregion
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, SlideCreateDTO slideCreateDto)
+        {
+            var entity = await _slideService.GetById(id);
+
+            if (entity is not null) 
+                return NotFound();
+
+            await _slideService.UpdateSlide(entity, slideCreateDto);
+            var slideDto = _mapper.Map<SlideCreateDTO>(entity);
+            _unitOfWork.Commit();
+
+            return new OkObjectResult(slideDto);
+        }
     }
 }
