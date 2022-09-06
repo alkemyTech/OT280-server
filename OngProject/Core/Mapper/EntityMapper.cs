@@ -2,10 +2,7 @@ using AutoMapper;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Core.Models.DTOs.Category;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using OngProject.Core.Models.DTOs.Slide;
 
 namespace OngProject.Core.Mapper
 {
@@ -43,9 +40,16 @@ namespace OngProject.Core.Mapper
             CreateMap<TestimonialDTO, Testimonials>();
 
             CreateMap<Comments, CommentDTO>();
-            CreateMap<CommentDTO, Comments>(); 
+            CreateMap<CommentDTO, Comments>();
             CreateMap<Comments, CommentGetAllDTO>();
             CreateMap<CommentGetAllDTO, Comments>();
+
+            // Slides
+            CreateMap<Slide, SlideDTO>();
+            CreateMap<SlideDTO, Slide>();
+            CreateMap<Slide, SlideCreateDTO>();
+            CreateMap<SlideCreateDTO, Slide>();
+
         }
     }
 }
