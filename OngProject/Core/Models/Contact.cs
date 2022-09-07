@@ -31,7 +31,7 @@ namespace OngProject.Core.Models
         [Required(ErrorMessage = "El campo Email es requerido")]
         [StringLength(50)]
         [EmailAddress]
-        public int Email { get; set; }
+        public string Email { get; set; }
 
         [Required(ErrorMessage = "El campo Message es requerido")]
         [StringLength(200)]
