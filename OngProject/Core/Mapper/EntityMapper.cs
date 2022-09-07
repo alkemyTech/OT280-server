@@ -2,6 +2,7 @@ using AutoMapper;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Core.Models.DTOs.Category;
+using OngProject.Core.Models.DTOs.Contact;
 using OngProject.Core.Models.DTOs.Slide;
 
 namespace OngProject.Core.Mapper
@@ -52,6 +53,9 @@ namespace OngProject.Core.Mapper
             CreateMap<Slide, SlideListDTO>();
             CreateMap<SlideListDTO, Slide>();
 
+            // Contact
+            CreateMap<Contact, ContactCreateDTO>();
+            CreateMap<ContactCreateDTO, Contact>();
         }
     }
 }
