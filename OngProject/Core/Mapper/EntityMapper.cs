@@ -49,6 +49,8 @@ namespace OngProject.Core.Mapper
             CreateMap<SlideDTO, Slide>();
             CreateMap<Slide, SlideCreateDTO>();
             CreateMap<SlideCreateDTO, Slide>();
+            CreateMap<Slide, SlideListDTO>();
+            CreateMap<SlideListDTO, Slide>();
 
         }
     }

@@ -73,15 +73,6 @@ namespace OngProject.Controllers
             return File(response.ResponseStream, response.Headers.ContentType);
         }
 
-        [HttpGet]
-        [Route("GetAll")]
-        public async Task<IActionResult> GetAll()
-        {
-            var response = await _amazonS3.ListObjectsAsync(BucketName); //ListObjectResponse
-            var files = response.S3Objects.Select(x => x.Key); //IEnumerable string
-            return Ok(files);
-        }
-
         // test para ver la urls de una lista de objetos
         // tiene time expire
         [HttpGet("GetUrls")]
@@ -103,36 +94,43 @@ namespace OngProject.Controllers
 
             return Ok(preSignedUrls);
         }
+              
 
-        #region asignaron a otro compa la tarea
-        // Dejo comentado porque no esta terminado y puede ser util y se puede reutilizar.
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var slide = await _slideService.GetById(id);
 
-        //[HttpGet("{id}")]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<IActionResult> GetById(int id)
-        //{
-        //    var slide = await _slideService.GetById(id);
+            if (slide == null)
+                return NotFound();
 
-        //    if (slide == null)
-        //        return NotFound();
+            var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
 
-        //    var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
-
-        //    var request = new GetPreSignedUrlRequest()
-        //    {
-        //        BucketName = BucketName,
-        //        Key = response.Key,
-        //        Expires = System.DateTime.UtcNow.AddSeconds(40)
-        //    };
-        //    var preSignedUrls = _amazonS3.GetPreSignedURL(request);
+            var request = new GetPreSignedUrlRequest()
+            {
+                BucketName = BucketName,
+                Key = response.Key,
+                Expires = System.DateTime.UtcNow.AddSeconds(40)
+            };
+            var preSignedUrls = _amazonS3.GetPreSignedURL(request);
 
 
-        //    var slideDTO = _mapper.Map<SlideDTO>(slide);
+            var slideDTO = _mapper.Map<SlideListDTO>(slide);
 
-        //    return new OkObjectResult(slideDTO);
-        //}
-        #endregion
+            return new OkObjectResult(slideDTO);
+        }
+
+        [HttpGet("GetImageById")]
+        public async Task<IActionResult> GetImageById(int id)
+        {
+            var slide = await _slideService.GetById(id);
+            if (slide is null)
+                return NotFound();
+            var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
+            return File(response.ResponseStream, response.Headers.ContentType);
+        }
 
         #region IFormFile
         // Prueba con IFormFile OK
