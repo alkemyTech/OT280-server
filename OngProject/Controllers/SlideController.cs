@@ -94,38 +94,40 @@ namespace OngProject.Controllers
 
             return Ok(preSignedUrls);
         }
+              
+          [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var slide = await _slideService.GetById(id);
+            if (slide == null)
+                return NotFound();
 
-        #region asignaron a otro compa la tarea
+            var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
 
-        // Dejo comentado porque no esta terminado y puede ser util y se puede reutilizar.
-
-        //[HttpGet("{id}")]
-        //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<IActionResult> GetById(int id)
-        //{
-        //    var slide = await _slideService.GetById(id);
-
-        //    if (slide == null)
-        //        return NotFound();
-
-        //    var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
-
-        //    var request = new GetPreSignedUrlRequest()
-        //    {
-        //        BucketName = BucketName,
-        //        Key = response.Key,
-        //        Expires = System.DateTime.UtcNow.AddSeconds(40)
-        //    };
-        //    var preSignedUrls = _amazonS3.GetPreSignedURL(request);
+            var request = new GetPreSignedUrlRequest()
+            {
+                BucketName = BucketName,
+                Key = response.Key,
+                Expires = System.DateTime.UtcNow.AddSeconds(40)
+            };
+            var preSignedUrls = _amazonS3.GetPreSignedURL(request);
 
 
-        //    var slideDTO = _mapper.Map<SlideDTO>(slide);
+            var slideDTO = _mapper.Map<SlideListDTO>(slide);
 
-        //    return new OkObjectResult(slideDTO);
-        //}
-
-        #endregion
+            return new OkObjectResult(slideDTO);
+        }
+        [HttpGet("GetImageById")]
+        public async Task<IActionResult> GetImageById(int id)
+        {
+            var slide = await _slideService.GetById(id);
+            if (slide is null)
+                return NotFound();
+            var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
+            return File(response.ResponseStream, response.Headers.ContentType);
+        }
 
         #region IFormFile
 
