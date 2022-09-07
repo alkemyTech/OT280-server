@@ -23,6 +23,13 @@ namespace OngProject.Controllers
             this._mapper = mapper;
         }
 
+        #region Documentation
+        /// <summary>
+        /// Alta de actividad al sistema. Rol: admin
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+        #endregion
         [HttpPost]
         [Route("/activities")]
         public async Task<IActionResult> Create(ActivityDTO activity)
@@ -41,6 +48,13 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
+        #region Documentation
+        /// <summary>
+        /// Actualización de actividad existente. Rol: admin
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+        #endregion
         [HttpPut]
         [Route("/activities/{id}")]
         public async Task<ActionResult> Update(int id, ActivityDTO activity)
