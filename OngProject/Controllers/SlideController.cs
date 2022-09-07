@@ -73,6 +73,15 @@ namespace OngProject.Controllers
             return File(response.ResponseStream, response.Headers.ContentType);
         }
 
+        [HttpGet]
+        [Route("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            var response = await _amazonS3.ListObjectsAsync(BucketName); //ListObjectResponse
+            var files = response.S3Objects.Select(x => x.Key); //IEnumerable string
+            return Ok(files);
+        }
+
         // test para ver la urls de una lista de objetos
         // tiene time expire
         [HttpGet("GetUrls")]
