@@ -1,10 +1,18 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using OngProject.Core.Models.DTOs.Account;
 
 namespace OngProject.Controllers
 {
@@ -15,12 +23,14 @@ namespace OngProject.Controllers
         private readonly UserManager<Users> _userManager;
         private readonly SignInManager<Users> _signInManager;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
-        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper) 
+        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, IConfiguration configuration) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -40,7 +50,7 @@ namespace OngProject.Controllers
         /// <response code="200">Solicitud concretada con exito</response>
         /// <response code="401">Credenciales no válidas</response>
         [HttpPost("login")]
-        public async Task<ActionResult<Users>> Login(LoginUserDTO login)
+        public async Task<ActionResult<Users>> Login(LoginUserDto login)
         {
             var user = _userManager.Users.SingleOrDefault(x => x.Email == login.Email);
 
@@ -73,7 +83,7 @@ namespace OngProject.Controllers
         /// <response code="200">Solicitud concretada con exito</response>
         /// <response code="401">Credenciales no válidas</response>
         [HttpPost("register")]
-        public async Task<ActionResult<Users>> Register([FromBody] UserDTO user)
+        public async Task<ActionResult<UserToken>> Register([FromBody] UserDto user)
         {
             if (UserExists(user.UserName)) 
                 return BadRequest("UserName already taken");
@@ -87,8 +97,14 @@ namespace OngProject.Controllers
 
             var result = await _userManager.CreateAsync(newUser, user.PasswordHash);
 
-            if (!result.Succeeded) 
+            if (result.Succeeded)
+            {
+                return await BuildToken(user);
+            }
+            else
+            {
                 return BadRequest(result.Errors);
+            }
 
             return Ok(user);
         }
@@ -97,5 +113,46 @@ namespace OngProject.Controllers
         {
             return _userManager.Users.Any(u => u.UserName == userName);
         }
+
+        #region Token
+        //Metodo de creacion del token
+
+        private async Task<UserToken> BuildToken(UserDto userInfo)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Email, userInfo.Email)
+            };
+
+            var users = await _userManager.FindByEmailAsync(userInfo.Email);
+            
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, users.Id));
+
+            var claimsDb = await _userManager.GetClaimsAsync(users);
+            
+            claims.AddRange(claimsDb);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var expiration = DateTime.UtcNow.AddYears(1);
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: null,
+                audience: null,
+                claims: claims,
+                expires: expiration,
+                signingCredentials: creds
+            );
+
+            return new UserToken
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = expiration
+            };
+
+        }
+
+        #endregion
     }
 }

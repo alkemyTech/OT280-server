@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OngProject.Core.Models.DTOs
+namespace OngProject.Core.Models.DTOs.Account
 {
-    public class LoginUserDTO
+    public class LoginUserDto
     {
         [Required]
         [DataType(DataType.EmailAddress)]
