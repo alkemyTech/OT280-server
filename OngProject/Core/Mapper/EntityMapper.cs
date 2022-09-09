@@ -56,6 +56,9 @@ namespace OngProject.Core.Mapper
             // Contact
             CreateMap<Contact, ContactCreateDTO>();
             CreateMap<ContactCreateDTO, Contact>();
+
+            CreateMap<News, NewDeleteResponseDTO>();
+            CreateMap<NewDeleteResponseDTO, News>();
         }
     }
 }

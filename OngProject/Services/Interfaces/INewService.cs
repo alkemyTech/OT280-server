@@ -7,5 +7,6 @@ namespace OngProject.Services.Interfaces
     public interface INewService : IGenericService<News>
     {
         Task<News> UpdateNews(News news, EditNewDTO editNewDTO);
+        void DeleteNew(News _new);
     }
 }
