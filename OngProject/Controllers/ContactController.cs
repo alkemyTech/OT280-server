@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs.Contact;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OngProject.Controllers
@@ -36,6 +38,19 @@ namespace OngProject.Controllers
                 _unitOfWork.Commit();
 
             return Created("Created", new { Response = StatusCode(201) });
+        }
+
+        //[Authorize(Roles="Admin")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Contact>>> GetsAll()
+        {
+            var contacts=await _contactService.GetAllAsync();
+            if (contacts == null)
+            {
+                return NotFound();
+            }
+            return Ok(contacts);            
+
         }
     }
 }
