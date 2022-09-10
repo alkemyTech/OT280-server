@@ -62,5 +62,22 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(newsDTO);
         }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NewsDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var news = await _newService.GetById(id);
+
+            if (news == null)
+            {
+                return NotFound();
+            }
+
+            var newsDTO = _mapper.Map<NewsDTO>(news);
+
+            return new OkObjectResult(newsDTO);
+        }
     }
 }
