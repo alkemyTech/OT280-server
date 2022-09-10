@@ -37,7 +37,7 @@ namespace OngProject.Controllers
         #endregion
         [HttpPost]
         [Route("/testimonials")]
-        public async Task<IActionResult> Create(TestimonialDTO testimonial)
+        public async Task<IActionResult> Create(NewsDTO testimonial)
         {
             if (!ModelState.IsValid)
             {
@@ -62,7 +62,7 @@ namespace OngProject.Controllers
         #endregion
         [HttpPut]
         [Route("/testimonials/{id}")]
-        public async Task<ActionResult> Update(int id, TestimonialDTO testimonial)
+        public async Task<ActionResult> Update(int id, NewsDTO testimonial)
         {
             var entity = await _testimonialService.GetById(id);
 
@@ -86,7 +86,7 @@ namespace OngProject.Controllers
         #endregion
         [HttpGet]
         [Route("api/testimonials")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TestimonialDTO>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<NewsDTO>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
         {
             //Paginacion
@@ -95,7 +95,7 @@ namespace OngProject.Controllers
 
             //var testimonials = await _testimonialService.GetAllAsync();
             var testimonials = await queryable.Paginar(paginacionDto).ToListAsync();
-            var testimonialsDTO = _mapper.Map<IEnumerable<TestimonialDTO>>(testimonials);
+            var testimonialsDTO = _mapper.Map<IEnumerable<NewsDTO>>(testimonials);
 
             return new OkObjectResult(testimonialsDTO);
         }

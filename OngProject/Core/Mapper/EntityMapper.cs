@@ -37,8 +37,8 @@ namespace OngProject.Core.Mapper
 
             CreateMap<Organization, OrganizationDTO>();
 
-            CreateMap<Testimonials, TestimonialDTO>();
-            CreateMap<TestimonialDTO, Testimonials>();
+            CreateMap<Testimonials, NewsDTO>();
+            CreateMap<NewsDTO, Testimonials>();
 
             CreateMap<Comments, CommentDTO>();
             CreateMap<CommentDTO, Comments>();
@@ -59,6 +59,8 @@ namespace OngProject.Core.Mapper
 
             CreateMap<News, NewDeleteResponseDTO>();
             CreateMap<NewDeleteResponseDTO, News>();
+            CreateMap<News, NewsDTO>();
+
         }
     }
 }

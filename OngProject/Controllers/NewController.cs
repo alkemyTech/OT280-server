@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OngProject.Core.Helper;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
@@ -44,6 +47,20 @@ namespace OngProject.Controllers
 
             return Ok(_newDTO);
         }
-        
+
+        [HttpGet]        
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<NewsDTO>))]
+        public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
+        {
+            //Paginacion
+            var queryable = _unitOfWork.Context.News.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDto.CantidadRegistroPorPagina);
+
+            //var news = await _newService.GetAllAsync();
+            var news = await queryable.Paginar(paginacionDto).ToListAsync();
+            var newsDTO = _mapper.Map<IEnumerable<NewsDTO>>(news);
+
+            return new OkObjectResult(newsDTO);
+        }
     }
 }
