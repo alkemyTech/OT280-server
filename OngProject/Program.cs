@@ -37,6 +37,7 @@ namespace OngProject
                     await AppDbContextSeed.SeedCategories(context);
                     await AppDbContextSeed.SeedActivities(context);
                     await AppDbContextSeed.SeedTestimonial(context);
+                    await AppDbContextSeed.SeedNews(context);
 
                 }
                 catch (Exception e)
