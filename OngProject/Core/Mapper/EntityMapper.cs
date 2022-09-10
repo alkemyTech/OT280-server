@@ -60,6 +60,8 @@ namespace OngProject.Core.Mapper
             CreateMap<News, NewDeleteResponseDTO>();
             CreateMap<NewDeleteResponseDTO, News>();
             CreateMap<News, NewsDTO>();
+            CreateMap<NewsDTO, News>();
+            CreateMap<CreateNewsDTO, News>();
 
         }
     }

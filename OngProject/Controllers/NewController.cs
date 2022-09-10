@@ -79,5 +79,30 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(newsDTO);
         }
+
+        [HttpPost]        
+        public async Task<IActionResult> Create(CreateNewsDTO createNewsDTO)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var news = _mapper.Map<News>(createNewsDTO);
+                var created = await _newService.CreateAsync(news);
+
+                if (created)
+                    _unitOfWork.Commit();
+
+                return Created("Created", new { Response = StatusCode(201) });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            
+        }
     }
 }
