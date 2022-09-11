@@ -1,6 +1,8 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
+using OngProject.Core.Models.DTOs.Account;
 using OngProject.Core.Models.DTOs.Category;
 using OngProject.Core.Models.DTOs.Contact;
 using OngProject.Core.Models.DTOs.Slide;
@@ -15,6 +17,12 @@ namespace OngProject.Core.Mapper
             CreateMap<MemberDTO, Members>();
             CreateMap<EditMemberDTO, Members>();
             CreateMap<Members, EditMemberDTO>();
+
+            #region User
+            
+            CreateMap<Users, CurrentUserDto>();
+            
+            #endregion
 
             // Categories
             CreateMap<Categories, CategoryDTO>();
