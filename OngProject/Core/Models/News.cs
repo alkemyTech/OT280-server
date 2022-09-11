@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OngProject.Core.Models
@@ -33,6 +34,8 @@ namespace OngProject.Core.Models
         [Timestamp]
         public byte[] ChangeCheck { get; set; }
         public bool IsDeleted { get; set; }
+
+        public DateTime? DeletedAt { get; set; }
 
 
         //Clave foranea hacia ID de Categories

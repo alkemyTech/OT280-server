@@ -1,7 +1,9 @@
 ﻿using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
+using OngProject.Repositories;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using System;
 using System.Threading.Tasks;
 
 namespace OngProject.Services
@@ -25,6 +27,11 @@ namespace OngProject.Services
             return news;
         }
 
-
+        public async void DeleteNew(News _new)
+        {
+            _new.IsDeleted = true;
+            _new.DeletedAt = DateTime.Now;
+            await _newRepository.Update(_new);
+        }
     }
 }
