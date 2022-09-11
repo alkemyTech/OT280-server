@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -130,7 +131,7 @@ namespace OngProject.Controllers
         }
 
         [HttpGet("me")]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<CurrentUserDto>> Get()
         {
             var currentUserId = _accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
