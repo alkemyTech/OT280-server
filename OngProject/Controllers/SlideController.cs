@@ -163,5 +163,20 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(slideDto);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var slide = await _slideService.GetById(id);
+
+            if (slide is null)
+                return NotFound(nameof(slide));
+
+            await _slideService.DeleteAsync(slide);
+            _unitOfWork.Commit();
+
+            return Ok(slide);
+        }
+
     }
 }
