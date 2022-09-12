@@ -15,7 +15,7 @@ using OngProject.Services.Interfaces;
 
 namespace OngProject.Controllers
 {
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     [Route("news")]
     [ApiController]
     public class NewController : ControllerBase
@@ -101,9 +101,25 @@ namespace OngProject.Controllers
             catch (Exception e)
             {
                 return BadRequest(e.Message);
-            }
-            
+            }            
         }
 
+        [HttpPut]        
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditNewDTO))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> Update(EditNewDTO editNewDTO)
+        {
+            var entity = await _newService.GetById(editNewDTO.NewId);
+
+            if (ModelState.IsValid && entity != null)
+            {
+                await _newService.UpdateNews(entity, editNewDTO);
+                _unitOfWork.Commit();
+
+                return new OkObjectResult(editNewDTO);
+            }
+
+            return NotFound();
+        }                 
     }
 }
