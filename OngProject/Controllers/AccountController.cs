@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using OngProject.Core.Models.DTOs.Account;
+using OngProject.Services.Interfaces;
 
 namespace OngProject.Controllers
 {
@@ -24,13 +25,15 @@ namespace OngProject.Controllers
         private readonly SignInManager<Users> _signInManager;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, IConfiguration configuration) 
+        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, IConfiguration configuration, IEmailService emailService) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -99,6 +102,7 @@ namespace OngProject.Controllers
 
             if (result.Succeeded)
             {
+                _emailService.SendWelcome(user.Email);
                 return await BuildToken(user);
             }
             else
