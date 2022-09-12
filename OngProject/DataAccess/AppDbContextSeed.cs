@@ -238,5 +238,28 @@ namespace OngProject.DataAccess
             }
             await context.SaveChangesAsync();
         }
+
+        public static async Task SeedNews(AppDbContext context)
+        {
+            if (!context.News.Any())
+            {
+                context.News.Add(new News
+                {
+                    Name = "Nuevo Taller Arte y Cuentos para los niños",
+                    Content = "Es un taller literario y de manualidades que se realiza semanalmente.",
+                    Image = "image.png",
+                    CategoryId = 2
+                });
+
+                context.News.Add(new News
+                {
+                    Name = "Apoyo Escolar Nivel Secundaria tambien sábados",
+                    Content = "Del mismo modo que se realiza de lunes a viernes, este taller se realizará tambien los días sabádos de 10 a 12 horas para todas las edades.",
+                    Image = "image.png",
+                    CategoryId = 2
+                });
+            }
+            await context.SaveChangesAsync();
+        }
     }
 }

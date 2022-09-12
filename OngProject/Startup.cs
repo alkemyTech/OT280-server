@@ -9,11 +9,13 @@ using Microsoft.EntityFrameworkCore;
 using OngProject.DataAccess;
 using OngProject.Core.Models;
 using OngProject.Middleware;
-using Microsoft.Extensions.Options;
 using System.IO;
 using System.Reflection;
 using System;
+using System.Text;
 using Amazon.S3;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace OngProject
 {
@@ -34,6 +36,20 @@ namespace OngProject
                 .AddRoles<Roles>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
+            
+            //Autenticacion
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(ops =>
+                    ops.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
+                        ClockSkew = TimeSpan.Zero
+                    });
 
             services.AddControllers();
 

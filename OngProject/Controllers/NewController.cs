@@ -79,5 +79,6 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(newsDTO);
         }
+
     }
 }

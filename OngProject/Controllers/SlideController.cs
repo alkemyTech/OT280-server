@@ -95,7 +95,7 @@ namespace OngProject.Controllers
             return Ok(preSignedUrls);
         }
               
-          [HttpGet("{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
