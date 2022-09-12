@@ -40,6 +40,8 @@ namespace OngProject.Middleware
             // Contact
             services.AddScoped<IContactRepository, ContactRepository>();
             services.AddScoped<IContactService, ContactService>();
+            // Email
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddAutoMapper(typeof(EntityMapper));
 
