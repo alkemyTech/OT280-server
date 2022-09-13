@@ -18,6 +18,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using OngProject.Core.Models.DTOs.Account;
 using OngProject.Repositories.Interfaces;
+using OngProject.Services.Interfaces;
+
 
 namespace OngProject.Controllers
 {
@@ -31,9 +33,10 @@ namespace OngProject.Controllers
         private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _accessor;
+        private readonly IEmailService _emailService;
 
-        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, 
-            IConfiguration configuration, IUnitOfWork unitOfWork, IHttpContextAccessor accessor) 
+        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, IConfiguration configuration, IEmailService emailService,
+             IUnitOfWork unitOfWork, IHttpContextAccessor accessor) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -41,6 +44,7 @@ namespace OngProject.Controllers
             _configuration = configuration;
             _unitOfWork = unitOfWork;
             _accessor = accessor;
+            _emailService = emailService;
         }
 
         /// <summary>
@@ -121,13 +125,13 @@ namespace OngProject.Controllers
 
             if (result.Succeeded)
             {
+                _emailService.SendWelcome(newUser.Email);
                 return await BuildToken(newUser.Email);
             }
             else
             {
                 return BadRequest(result.Errors);
-            }
-            
+            }           
         }
 
         [HttpGet("me")]
@@ -151,7 +155,6 @@ namespace OngProject.Controllers
 
         #region Token
         //Metodo de creacion del token
-
         private async Task<UserToken> BuildToken(string email)
         {
             var claims = new List<Claim>()
@@ -160,6 +163,7 @@ namespace OngProject.Controllers
             };
 
             var users = await _userManager.FindByEmailAsync(email);
+
             
             claims.Add(new Claim(ClaimTypes.NameIdentifier, users.Id));
 
