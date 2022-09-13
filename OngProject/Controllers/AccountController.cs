@@ -10,10 +10,16 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using OngProject.Core.Models.DTOs.Account;
+using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+
 
 namespace OngProject.Controllers
 {
@@ -25,14 +31,19 @@ namespace OngProject.Controllers
         private readonly SignInManager<Users> _signInManager;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IHttpContextAccessor _accessor;
         private readonly IEmailService _emailService;
 
-        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, IConfiguration configuration, IEmailService emailService) 
+        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, IConfiguration configuration, IEmailService emailService,
+             IUnitOfWork unitOfWork, IHttpContextAccessor accessor) 
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
             _configuration = configuration;
+            _unitOfWork = unitOfWork;
+            _accessor = accessor;
             _emailService = emailService;
         }
 
@@ -53,17 +64,29 @@ namespace OngProject.Controllers
         /// <response code="200">Solicitud concretada con exito</response>
         /// <response code="401">Credenciales no válidas</response>
         [HttpPost("login")]
-        public async Task<ActionResult<Users>> Login(LoginUserDto login)
+        public async Task<ActionResult<UserToken>> Login([FromBody]LoginUserDto user)
         {
-            var user = _userManager.Users.SingleOrDefault(x => x.Email == login.Email);
+            // var user = _userManager.Users.SingleOrDefault(x => x.Email == login.Email);
+            //
+            // if (user == null) return Unauthorized("Username or password incorrect");
+            //
+            // var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
+            //
+            // if (!result.Succeeded) return Unauthorized();
+            //
+            // return Ok(user);
 
-            if (user == null) return Unauthorized("Username or password incorrect");
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
-
-            if (!result.Succeeded) return Unauthorized();
-
-            return Ok(user);
+            var result = await _signInManager.PasswordSignInAsync(user.Email, user.Password,
+                isPersistent: false, lockoutOnFailure: false);
+            
+            if (result.Succeeded)
+            {
+                return await BuildToken(user.Email);
+            }
+            else
+            {
+                return BadRequest("Inicio de sesión no válido");
+            }
         }
 
         /// <summary>
@@ -102,15 +125,27 @@ namespace OngProject.Controllers
 
             if (result.Succeeded)
             {
-                _emailService.SendWelcome(user.Email);
-                return await BuildToken(user);
+                _emailService.SendWelcome(newUser.Email);
+                return await BuildToken(newUser.Email);
             }
             else
             {
                 return BadRequest(result.Errors);
-            }
+            }           
+        }
 
-            return Ok(user);
+        [HttpGet("me")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<CurrentUserDto>> Get()
+        {
+            var currentUserId = _accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            var user = await _unitOfWork.Context.Users.FirstOrDefaultAsync(u => u.Id.Equals(currentUserId));
+
+            if (user is null)
+                return NotFound();
+            
+            return _mapper.Map<CurrentUserDto>(user);
         }
 
         private bool UserExists(string userName)
@@ -120,15 +155,15 @@ namespace OngProject.Controllers
 
         #region Token
         //Metodo de creacion del token
-
-        private async Task<UserToken> BuildToken(UserDto userInfo)
+        private async Task<UserToken> BuildToken(string email)
         {
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Email, userInfo.Email)
+                new Claim(ClaimTypes.Email, email)
             };
 
-            var users = await _userManager.FindByEmailAsync(userInfo.Email);
+            var users = await _userManager.FindByEmailAsync(email);
+
             
             claims.Add(new Claim(ClaimTypes.NameIdentifier, users.Id));
 
