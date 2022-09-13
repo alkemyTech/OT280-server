@@ -13,12 +13,11 @@ namespace OngProject.Core.Models.DTOs
         [StringLength(100)]
         public string Image { get; set; }
 
-
         [StringLength(100)]
         public string? Address { get; set; }
 
-        [Phone(ErrorMessage = "El formato del campo debe corresponder al de un número telefonico")]
-        [Range(0, 20, ErrorMessage = " El valor del campo debe ser un número entre 0 y 20")]
+        //[Phone(ErrorMessage = "El formato del campo debe corresponder al de un número telefonico")]
+        //[Range(0, 20, ErrorMessage = " El valor del campo debe ser un número entre 0 y 20")]
         public int? Phone { get; set; }
 
         [StringLength(256)]
