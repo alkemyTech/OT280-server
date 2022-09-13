@@ -11,6 +11,9 @@ using System.IO;
 using System.Linq;
 using OngProject.Core.Models.DTOs.Slide;
 using System;
+using OngProject.Services;
+using Microsoft.IdentityModel.Tokens;
+using EllipticCurve.Utils;
 
 namespace OngProject.Controllers
 {
@@ -39,9 +42,35 @@ namespace OngProject.Controllers
             _awsS3Service = awsS3Service;
         }
 
-
+        /// <summary>
+        /// Crear Slide con imagen en base64
+        /// </summary>
+        /// <returns>Token de acceso</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /slide
+        ///     {
+        ///         "imageBase64": "stringBase64",
+        ///         "imageName": "Juguetes1.jpg",
+        ///         "text": "string",
+        ///         "organization": {
+        ///           "name": "string",
+        ///           "image": "string",
+        ///           "address": "string",
+        ///           "phone": 1234,
+        ///           "email": "user@example.com",
+        ///           "welcomeText": "string",
+        ///           "aboutUsText": "string",
+        ///           "facebookUrl": "string",
+        ///           "linkedinUrl": "string",
+        ///           "instagramUrl": "string"
+        ///         }
+        ///     }
+        /// </remarks>
+        /// <response code="200">Solicitud concretada con exito</response>
         [HttpPost]
-        public async Task<IActionResult> CreateSlide(SlideCreateDTO newSlide)
+        public async Task<IActionResult> CreateSlideImageB64(SlideCreateDTO newSlide)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -55,8 +84,15 @@ namespace OngProject.Controllers
             if (result.HttpStatusCode.ToString() != "OK")
                 return BadRequest();
 
-            _slide.ImageUrl = newSlide.ImageName;
+            var slide = await _slideService.GetAllAsync();
+            var slideTable = _mapper.Map<Slide>(slide.OrderByDescending(x => x.Order).First());
 
+            if (slide == null)
+                _slide.Order = 1;
+            else
+                _slide.Order = slideTable.Order + 1;
+
+            _slide.ImageUrl = newSlide.ImageName;
 
             var created = await _slideService.CreateAsync(_slide);
 
@@ -65,11 +101,53 @@ namespace OngProject.Controllers
 
             return Created("Created", new { Response = StatusCode(201) });
         }
+        
+        [HttpPost("IFromFile")]
+        public async Task<IActionResult> CreateSlideFile(IFormFile file)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
 
+            var putRequest = _awsS3Service.PutRequest(file);
+
+            var result = await _amazonS3.PutObjectAsync(putRequest);
+            return Ok(result);
+        }
+
+        //IFormFile es solo para solicitudes codificadas de datos de formulario/varias partes,
+        //y no puede mezclar y combinar codificaciones de cuerpo de solicitud cuando usa ModelBinder.
+        //Por lo tanto, tendría que dejar de usar JSON o enviar el archivo en el objeto JSON,
+        //como se describe anteriormente, en lugar de usar IFormFile.
+        //[HttpPost("file")]
+        //public async Task<IActionResult> CreateSlideFile(IFormFile file, SlideCreateDTO newSlide)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest();
+
+        //    var _slide = _mapper.Map<Slide>(newSlide);
+
+        //    var putRequest = _awsS3Service.PutObjectRequestImageBase64(newSlide.ImageBase64, newSlide.ImageName);
+
+        //    var result = await _amazonS3.PutObjectAsync(putRequest);
+
+        //    if (result.HttpStatusCode.ToString() != "OK")
+        //        return BadRequest();
+
+        //    _slide.ImageUrl = newSlide.ImageName;
+
+
+        //    var created = await _slideService.CreateAsync(_slide);
+
+        //    if (created)
+        //        _unitOfWork.Commit();
+
+        //    return Created("Created", new { Response = StatusCode(201) });
+        //}
+        
         [HttpGet]
         public async Task<IActionResult> Get(string imageName)
         {
-            var response = await _amazonS3.GetObjectAsync(BucketName, imageName);
+            var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" +imageName);
             return File(response.ResponseStream, response.Headers.ContentType);
         }
 
@@ -87,7 +165,7 @@ namespace OngProject.Controllers
                 {
                     BucketName = BucketName,
                     Key = o.Key,
-                    Expires = System.DateTime.UtcNow.AddSeconds(30)
+                    Expires = System.DateTime.UtcNow.AddDays(1)
                 };
                 return _amazonS3.GetPreSignedURL(request);
             });
@@ -119,6 +197,7 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(slideDTO);
         }
+        
         [HttpGet("GetImageById")]
         public async Task<IActionResult> GetImageById(int id)
         {
@@ -128,26 +207,6 @@ namespace OngProject.Controllers
             var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
             return File(response.ResponseStream, response.Headers.ContentType);
         }
-
-        #region IFormFile
-
-        // Prueba con IFormFile OK
-        // La tarea dice usar string Base64 - analizar que es mas conveniente
-        // El string base64 es muy extenso.
-
-        //[HttpPost("CreateIFormFile")]
-        //public async Task<IActionResult> Create(IFormFile file)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
-
-        //    var putRequest = _awsS3Service.PutRequest(file);
-
-        //    var result = await _amazonS3.PutObjectAsync(putRequest);
-        //    return Ok(result);
-        //}
-
-        #endregion
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, SlideCreateDTO slideCreateDto)

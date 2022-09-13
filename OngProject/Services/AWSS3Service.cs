@@ -69,7 +69,7 @@ namespace OngProject.Services
             return new PutObjectRequest()
             {
                 BucketName = BucketName,
-                Key = file.FileName,
+                Key = "slides/" + file.FileName,
                 InputStream = file.OpenReadStream(),
                 ContentType = file.ContentType,
             };
