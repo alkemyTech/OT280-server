@@ -14,6 +14,10 @@ using System;
 using OngProject.Services;
 using Microsoft.IdentityModel.Tokens;
 using EllipticCurve.Utils;
+using Microsoft.EntityFrameworkCore;
+using OngProject.Core.Models.DTOs;
+using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace OngProject.Controllers
 {
@@ -45,7 +49,6 @@ namespace OngProject.Controllers
         /// <summary>
         /// Crear Slide con imagen en base64
         /// </summary>
-        /// <returns>Token de acceso</returns>
         /// <remarks>
         /// Sample request:
         ///
@@ -68,14 +71,12 @@ namespace OngProject.Controllers
         ///         }
         ///     }
         /// </remarks>
-        /// <response code="200">Solicitud concretada con exito</response>
-        [HttpPost]
+        /// <response code="201">Creada con exito</response>
+        [HttpPost()]
         public async Task<IActionResult> CreateSlideImageB64(SlideCreateDTO newSlide)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-
-            var _slide = _mapper.Map<Slide>(newSlide);
 
             var putRequest = _awsS3Service.PutObjectRequestImageBase64(newSlide.ImageBase64, newSlide.ImageName);
 
@@ -87,12 +88,15 @@ namespace OngProject.Controllers
             var slide = await _slideService.GetAllAsync();
             var slideTable = _mapper.Map<Slide>(slide.OrderByDescending(x => x.Order).First());
 
+            var _slide = _mapper.Map<Slide>(newSlide);
+
             if (slide == null)
                 _slide.Order = 1;
             else
                 _slide.Order = slideTable.Order + 1;
 
-            _slide.ImageUrl = newSlide.ImageName;
+            _slide.ImageUrl = _awsS3Service.GetUrlRequest("slides/" + newSlide.ImageName);
+            //_slide.ImageUrl = newSlide.ImageName;
 
             var created = await _slideService.CreateAsync(_slide);
 
@@ -101,8 +105,20 @@ namespace OngProject.Controllers
 
             return Created("Created", new { Response = StatusCode(201) });
         }
-        
-        [HttpPost("IFromFile")]
+
+        /// <summary>
+        /// Subir imagen con upload al bucket - jpg o png
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /slide
+        ///     {
+        ///         upload file
+        ///     }
+        /// </remarks>
+        /// <response code="201">Creada con exito</response>
+        [HttpPost("File")]
         public async Task<IActionResult> CreateSlideFile(IFormFile file)
         {
             if (!ModelState.IsValid)
@@ -114,6 +130,7 @@ namespace OngProject.Controllers
             return Ok(result);
         }
 
+        #region No se puede combinar multipart/form data con IFormFile
         //IFormFile es solo para solicitudes codificadas de datos de formulario/varias partes,
         //y no puede mezclar y combinar codificaciones de cuerpo de solicitud cuando usa ModelBinder.
         //Por lo tanto, tendría que dejar de usar JSON o enviar el archivo en el objeto JSON,
@@ -143,36 +160,55 @@ namespace OngProject.Controllers
 
         //    return Created("Created", new { Response = StatusCode(201) });
         //}
-        
-        [HttpGet]
-        public async Task<IActionResult> Get(string imageName)
-        {
-            var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" +imageName);
-            return File(response.ResponseStream, response.Headers.ContentType);
-        }
+        #endregion
 
+        #region imagen con nombre del objeto en el bucket
+        //[HttpGet("Image")]
+        //public async Task<IActionResult> Get(string imageName)
+        //{
+        //    var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" + imageName);
+        //    return File(response.ResponseStream, response.Headers.ContentType);
+        //}
+        #endregion
+
+        #region test para ver la urls de una lista de objetos
         // test para ver la urls de una lista de objetos
         // tiene time expire
-        [HttpGet("GetUrls")]
-        public async Task<IActionResult> GetList(string prefix)
+        //[HttpGet("GetUrls")]
+        //public async Task<IActionResult> GetList(string prefix)
+        //{
+        //    var request = _awsS3Service.ListObjectV2(prefix);
+
+        //    var response = await _amazonS3.ListObjectsV2Async(request);
+        //    var preSignedUrls = response.S3Objects.Select(o =>
+        //    {
+        //        var request = new GetPreSignedUrlRequest()
+        //        {
+        //            BucketName = BucketName,
+        //            Key = o.Key,
+        //            Expires = System.DateTime.UtcNow.AddDays(1)
+        //        };
+        //        return _amazonS3.GetPreSignedURL(request);
+        //    });
+
+        //    return Ok(preSignedUrls);
+        //}
+        #endregion
+
+        [HttpGet()]
+        public async Task<IActionResult> GetAll()
         {
-            var request = _awsS3Service.ListObjectV2(prefix);
+            var slide = _unitOfWork.Context.Slides.AsQueryable();
 
-            var response = await _amazonS3.ListObjectsV2Async(request);
-            var preSignedUrls = response.S3Objects.Select(o =>
-            {
-                var request = new GetPreSignedUrlRequest()
-                {
-                    BucketName = BucketName,
-                    Key = o.Key,
-                    Expires = System.DateTime.UtcNow.AddDays(1)
-                };
-                return _amazonS3.GetPreSignedURL(request);
-            });
+            slide = slide.OrderBy(s => s.Order);
 
-            return Ok(preSignedUrls);
+            var slides = await slide.AsNoTracking().ToListAsync();
+
+            var slideDTO = _mapper.Map<IEnumerable<SlideListDTO>>(slides);
+
+            return new OkObjectResult(slideDTO);
         }
-              
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -182,29 +218,22 @@ namespace OngProject.Controllers
             if (slide == null)
                 return NotFound();
 
-            var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
-
-            var request = new GetPreSignedUrlRequest()
-            {
-                BucketName = BucketName,
-                Key = response.Key,
-                Expires = System.DateTime.UtcNow.AddSeconds(40)
-            };
-            var preSignedUrls = _amazonS3.GetPreSignedURL(request);
-
-
-            var slideDTO = _mapper.Map<SlideListDTO>(slide);
+            var slideDTO = _mapper.Map<SlideDTO>(slide);
 
             return new OkObjectResult(slideDTO);
         }
         
-        [HttpGet("GetImageById")]
+        [HttpGet("ImageById/{id}")]
         public async Task<IActionResult> GetImageById(int id)
         {
             var slide = await _slideService.GetById(id);
             if (slide is null)
                 return NotFound();
-            var response = await _amazonS3.GetObjectAsync(BucketName, slide.ImageUrl);
+
+            string[] split1 = slide.ImageUrl.Split("?");
+            string[] image = split1[0].Split("/");
+
+            var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" + image[4].ToString());
             return File(response.ResponseStream, response.Headers.ContentType);
         }
 
@@ -237,5 +266,11 @@ namespace OngProject.Controllers
             return Ok(slide);
         }
 
+        //[HttpDelete("DeleteImage")]
+        //public async Task<IActionResult> Delete(string imageName)
+        //{
+        //    var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" + imageName);
+        //    return File(response.ResponseStream, response.Headers.ContentType);
+        //}
     }
 }

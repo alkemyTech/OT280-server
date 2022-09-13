@@ -10,7 +10,7 @@ namespace OngProject.Services
 {
     public class AWSS3Service : IAWSS3Service
     {
-        private string BucketName = "cohorte-agosto-38d749a7";
+        private readonly string BucketName = "cohorte-agosto-38d749a7";
 
         private readonly IUnitOfWork _unitOfWork;
 
@@ -60,20 +60,33 @@ namespace OngProject.Services
             }
             
             IFormFile file;
-            file = new FormFile(stream, 0, bytes.Length, ImageName, ImageName)
+            file = new FormFile(stream, 0, bytes.Length, ImageName, "slides/" +ImageName)
             {
                 Headers = new HeaderDictionary(),
                 ContentType = contentType
             };
 
-            return new PutObjectRequest()
+            return PutRequest(file);
+        }
+
+        public string GetUrlRequest(string ImageName)
+        {
+            // Create a client
+            AmazonS3Client client = new();
+
+            // Create a CopyObject request
+            GetPreSignedUrlRequest request = new()
             {
                 BucketName = BucketName,
-                Key = "slides/" + file.FileName,
-                InputStream = file.OpenReadStream(),
-                ContentType = file.ContentType,
+                Key = ImageName,
+                Expires = DateTime.Now.AddMonths(2)
             };
 
+            // Get path for request
+            return  client.GetPreSignedURL(request);
+
         }
+
+
     }
 }
