@@ -7,11 +7,13 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace OngProject.Controllers
 {
     [Route("contacts")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ContactController : Controller
     {
         private readonly IContactService _contactService;
@@ -40,8 +42,9 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
-        //[Authorize(Roles="Admin")]
+        
         [HttpGet]
+        //[Authorize(Roles="Admin")]
         public async Task<ActionResult<IEnumerable<Contact>>> GetsAll()
         {
             var contacts=await _contactService.GetAllAsync();
