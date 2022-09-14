@@ -110,7 +110,7 @@ namespace OngProject.Controllers
 
         #region Documentation
         /// <summary>
-        /// Alta de actividad novedad. 
+        /// Alta de novedad. 
         /// </summary>
         /// <response code="200">Solicitud concretada con exito</response>
         /// <response code="401">Credenciales no válidas</response>
