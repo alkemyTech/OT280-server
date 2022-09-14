@@ -66,19 +66,12 @@ namespace OngProject.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserToken>> Login([FromBody]LoginUserDto user)
         {
-            // var user = _userManager.Users.SingleOrDefault(x => x.Email == login.Email);
-            //
-            // if (user == null) return Unauthorized("Username or password incorrect");
-            //
-            // var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
-            //
-            // if (!result.Succeeded) return Unauthorized();
-            //
-            // return Ok(user);
-
-            var result = await _signInManager.PasswordSignInAsync(user.Email, user.Password,
-                isPersistent: false, lockoutOnFailure: false);
+            var users = _userManager.Users.SingleOrDefault(x => x.Email == user.Email);
             
+            if (user == null) return Unauthorized("Username or password incorrect");
+            
+            var result = await _signInManager.CheckPasswordSignInAsync(users, user.Password, false);
+
             if (result.Succeeded)
             {
                 return await BuildToken(user.Email);
@@ -87,6 +80,7 @@ namespace OngProject.Controllers
             {
                 return BadRequest("Inicio de sesión no válido");
             }
+            
         }
 
         /// <summary>
