@@ -44,6 +44,7 @@ namespace OngProject.Core.Mapper
             CreateMap<ActivityDTO, Activities>();
 
             CreateMap<Organization, OrganizationDTO>();
+            CreateMap<OrganizationDTO, Organization>();
 
             CreateMap<Testimonials, TestimonialDTO>();
             CreateMap<TestimonialDTO, Testimonials>();
@@ -56,6 +57,7 @@ namespace OngProject.Core.Mapper
             // Slides
             CreateMap<Slide, SlideDTO>();
             CreateMap<SlideDTO, Slide>();
+            CreateMap<Slide, Slide>();
             CreateMap<Slide, SlideCreateDTO>();
             CreateMap<SlideCreateDTO, Slide>();
             CreateMap<Slide, SlideListDTO>();
