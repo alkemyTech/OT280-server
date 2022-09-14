@@ -12,7 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace OngProject.Controllers
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Admin")]
+    //[Route("api/")]
+    [Authorize(Roles = "admin")]
     public class ActivityController : ControllerBase
     {
         private readonly IActivityService _activityService;
@@ -35,6 +36,7 @@ namespace OngProject.Controllers
         #endregion
         [HttpPost]
         [Route("/activities")]
+        
         public async Task<IActionResult> Create(ActivityDTO activity)
         {
             if (!ModelState.IsValid)

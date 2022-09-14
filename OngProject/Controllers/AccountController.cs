@@ -151,13 +151,19 @@ namespace OngProject.Controllers
         //Metodo de creacion del token
         private async Task<UserToken> BuildToken(string email)
         {
+            var users = await _userManager.FindByEmailAsync(email);
+            var userRoles = await _userManager.GetRolesAsync(users);
+            
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Email, email)
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Name, users.UserName)
             };
 
-            var users = await _userManager.FindByEmailAsync(email);
-
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
             
             claims.Add(new Claim(ClaimTypes.NameIdentifier, users.Id));
 
