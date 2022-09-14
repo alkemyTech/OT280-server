@@ -48,6 +48,14 @@ namespace OngProject.Controllers
             return Ok(_newDTO);
         }
 
+        #region Documentacion
+
+        /// <summary>
+        /// Endpoint para listar todas las novedades existentes en el sistema
+        /// </summary>
+        /// <returns>Lista de novedades como News[]</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        #endregion
         [HttpGet]        
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<NewsDTO>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
@@ -63,6 +71,16 @@ namespace OngProject.Controllers
             return new OkObjectResult(newsDTO);
         }
 
+        #region Documentacion
+
+        /// <summary>
+        /// Endpoint para obtener los datos de una novedad por su id.
+        /// </summary>
+        /// <returns>Objeto de la clase Novedades</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+
+        #endregion
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NewsDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -80,6 +98,13 @@ namespace OngProject.Controllers
             return new OkObjectResult(newsDTO);
         }
 
+        #region Documentation
+        /// <summary>
+        /// Alta de actividad novedad. 
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+        #endregion
         [HttpPost]        
         public async Task<IActionResult> Create(CreateNewsDTO createNewsDTO)
         {
@@ -104,6 +129,13 @@ namespace OngProject.Controllers
             }            
         }
 
+        #region Documentation
+        /// <summary>
+        /// Actualización de novedad existente
+        /// </summary>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="404">No encontrado</response>
+        #endregion
         [HttpPut]        
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditNewDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
