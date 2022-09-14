@@ -31,6 +31,16 @@ namespace OngProject.Controllers
             this._mapper = mapper;
         }
 
+        #region Documentacion
+
+        /// <summary>
+        /// Endpoint para eliminar una novedad por su id.
+        /// </summary>
+        /// <returns>Objeto de la clase Novedades</returns>
+        /// <response code="200">Solicitud concretada con exito</response>
+        /// <response code="401">Credenciales no válidas</response>
+
+        #endregion
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
