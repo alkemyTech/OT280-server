@@ -119,7 +119,9 @@ namespace OngProject.Controllers
 
             if (result.Succeeded)
             {
-                _emailService.SendWelcome(newUser.Email);
+                if (_emailService.IsConfigured())
+                    _emailService.SendWelcome(newUser.Email);
+
                 return await BuildToken(newUser.Email);
             }
             else

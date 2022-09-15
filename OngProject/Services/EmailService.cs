@@ -13,16 +13,24 @@ namespace OngProject.Services
             .AddEnvironmentVariables()
             .Build();
 
-        private static string _apiKey = _config["SendGrid:ApiKey"];
-        private static string _fromEmailAddress = _config["Email:From:Email"];
-        private static string _fromName = _config["Email:From:Name"];
+        private static readonly string _apiKey = _config["SendGrid:ApiKey"];
+        private static readonly string _fromEmailAddress = _config["Email:From:Email"];
+        private static readonly string _fromName = _config["Email:From:Name"];
 
         // reemplazar este hardcoding cuando se haga el seed de Organization
-        private string _facebok = "Somos_Más";
-        private string _instagram = "SomosMás";
-        private string _phone = "1160112988";
-        private string _email = "somosfundacionmas@gmail.com";
-        
+        private readonly string _facebook = "Somos_Más";
+        private readonly string _instagram = "SomosMás";
+        private readonly string _phone = "1160112988";
+        private readonly string _email = "somosfundacionmas@gmail.com";
+
+        public bool IsConfigured() 
+        {
+            if (_config["SendGrid:ApiKey"] != null && _config["Email:From:Email"] != null)
+                return true;
+            
+            return false;
+        }
+
         public void SendWelcome(string email)
         {
             var dynamicTemplateData = generateDynamicTemplateData
@@ -47,7 +55,7 @@ namespace OngProject.Services
                 subject = _subject,
                 title = _title,
                 body = _body,
-                facebook = _facebok,
+                facebook = _facebook,
                 instagram = _instagram,
                 phone = _phone,
                 email = _email
