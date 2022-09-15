@@ -13,7 +13,7 @@ namespace OngProject.Controllers
 {
     [Route("contacts")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ContactController : Controller
     {
         private readonly IContactService _contactService;
@@ -38,13 +38,10 @@ namespace OngProject.Controllers
             var newContact = _mapper.Map<Contact>(contactDTO);
             var created = await _contactService.CreateAsync(newContact);
 
-            if (created)
+            if (created && _emailService.IsConfigured())
             {
-                if (_emailService.IsConfigured())
-                {
-                    _emailService.SendSuccessContact(contactDTO.Email);
-                    _unitOfWork.Commit();
-                }                    
+                _emailService.SendSuccessContact(contactDTO.Email);
+                _unitOfWork.Commit();                                  
             }
 
             return Created("Created", new { Response = StatusCode(201) });
