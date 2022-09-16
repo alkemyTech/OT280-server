@@ -85,18 +85,21 @@ namespace OngProject.Controllers
             if (result.HttpStatusCode.ToString() != "OK")
                 return BadRequest();
 
-            var slide = await _slideService.GetAllAsync();
-            var slideTable = _mapper.Map<Slide>(slide.OrderByDescending(x => x.Order).First());
-
             var _slide = _mapper.Map<Slide>(newSlide);
 
-            if (slide == null)
+            var slide = await _slideService.GetAllAsync();
+            
+            if (slide.Count() == 0)
+            {
                 _slide.Order = 1;
+            }
             else
+            {
+                var slideTable = _mapper.Map<Slide>(slide.OrderByDescending(x => x.Order).First());
                 _slide.Order = slideTable.Order + 1;
+            }
 
             _slide.ImageUrl = _awsS3Service.GetUrlRequest("slides/" + newSlide.ImageName);
-            //_slide.ImageUrl = newSlide.ImageName;
 
             var created = await _slideService.CreateAsync(_slide);
 
@@ -222,7 +225,7 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(slideDTO);
         }
-        
+
         [HttpGet("ImageById/{id}")]
         public async Task<IActionResult> GetImageById(int id)
         {
@@ -242,7 +245,7 @@ namespace OngProject.Controllers
         {
             var entity = await _slideService.GetById(id);
 
-            if (entity is not null) 
+            if (entity is not null)
                 return NotFound();
 
             await _slideService.UpdateSlide(entity, slideCreateDto);
