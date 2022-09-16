@@ -12,7 +12,9 @@ using OngProject.Middleware;
 using System.IO;
 using System.Reflection;
 using System;
+using System.Security.Cryptography.Xml;
 using System.Text;
+using System.Text.Json.Serialization;
 using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -95,6 +97,8 @@ namespace OngProject
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
+
+            services.AddControllers().AddNewtonsoftJson();
             
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));            
