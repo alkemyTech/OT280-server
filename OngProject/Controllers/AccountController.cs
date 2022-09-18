@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using OngProject.Core.Models.DTOs.Account;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 
 
 namespace OngProject.Controllers
@@ -47,22 +49,27 @@ namespace OngProject.Controllers
             _emailService = emailService;
         }
 
-        /// <summary>
-        /// Login de usuario registrado al sistema. Rol: admin | standard
-        /// </summary>
-        /// <returns>Token de acceso</returns>
-        /// <remarks>
+        #region Sample Resquest
+        ///<remarks>
         /// Sample request:
         ///
-        ///     POST /auth/login
+        ///     POST /auth/register
         ///     {
-        ///         "email": "user@example.com",
-        ///         "password": "Password@123"
+        ///         "userName": "marita",
+        ///         "firstName": "Marita",
+        ///         "lastName": "Gómez",
+        ///         "email": "maritagomez@gmail.com",
+        ///         "passwordHash": "Password@123"
         ///     }
         ///
         /// </remarks>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
+        #endregion
+        #region Documentation
+        [SwaggerOperation(Summary = "User Login")]
+        [SwaggerResponse(200, "Logged in. Returns Token")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpPost("login")]
         public async Task<ActionResult<UserToken>> Login([FromBody]LoginUserDto user)
         {
@@ -83,10 +90,7 @@ namespace OngProject.Controllers
             
         }
 
-        /// <summary>
-        /// Registro de nuevo usuario standard al sistema.
-        /// </summary>
-        /// <returns>JSON del usuario registrado</returns>
+        #region Sample Resquest
         /// <remarks>
         /// Sample request:
         ///
@@ -100,8 +104,13 @@ namespace OngProject.Controllers
         ///     }
         ///
         /// </remarks>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
+        #endregion
+        #region Documentation
+        [SwaggerOperation(Summary = "Register user", Description = ".")]
+        [SwaggerResponse(200, "Success. Returns a username.")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpPost("register")]
         public async Task<ActionResult<UserToken>> Register([FromBody] UserDto user)
         {
@@ -130,6 +139,12 @@ namespace OngProject.Controllers
             }           
         }
 
+        #region Documentation
+        [SwaggerOperation(Summary = "Account details", Description = "Requires user or admin privileges.")]
+        [SwaggerResponse(200, "Success. Return the account details.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpGet("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<CurrentUserDto>> Get()
