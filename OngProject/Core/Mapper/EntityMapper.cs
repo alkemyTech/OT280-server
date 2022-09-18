@@ -19,8 +19,10 @@ namespace OngProject.Core.Mapper
             CreateMap<Members, EditMemberDTO>();
 
             #region User
-            
+
+            CreateMap<Users, UserDto>();
             CreateMap<Users, CurrentUserDto>();
+            CreateMap<Users, UpdateUserDto>().ReverseMap();
             
             #endregion
 
