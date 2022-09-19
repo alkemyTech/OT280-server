@@ -66,6 +66,7 @@ namespace OngProject.Controllers
         /// <returns>Lista de novedades como News[]</returns>
         /// <response code="200">Solicitud concretada con exito</response>
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpGet]        
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<NewsDTO>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)

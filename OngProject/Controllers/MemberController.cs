@@ -9,9 +9,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Helper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OngProject.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class MemberController : ControllerBase

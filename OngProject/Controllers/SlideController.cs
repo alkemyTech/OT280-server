@@ -18,10 +18,11 @@ using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Models.DTOs;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OngProject.Controllers
 {
-    //[Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "admin")]
     [Route("[controller]")]
     [ApiController]
     public class SlideController : Controller
