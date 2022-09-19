@@ -14,7 +14,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "admin")]
     [ApiController]
     public class TestimonialController : ControllerBase
     {

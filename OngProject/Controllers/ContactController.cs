@@ -62,7 +62,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
         #endregion
         [HttpGet]
-        //[Authorize(Roles="Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Contact>>> GetsAll()
         {
             var contacts=await _contactService.GetAllAsync();

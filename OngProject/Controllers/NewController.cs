@@ -39,6 +39,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(403, "Unauthorized user.")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpGet]        
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<NewsDTO>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)

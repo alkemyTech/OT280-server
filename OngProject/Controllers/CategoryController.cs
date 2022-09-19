@@ -7,6 +7,7 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Helper;
 using OngProject.Core.Models.DTOs;
@@ -14,7 +15,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
-    //[Authorize(Roles="admin")]
+    [Authorize(Roles = "admin")]
     [Route("categories")]
     [ApiController]
     public class CategoryController : ControllerBase
@@ -37,6 +38,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(403, "Unauthorized user or wrong jwt token")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryGetAllNamesResponse>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
