@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Models.DTOs;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
@@ -46,9 +47,7 @@ namespace OngProject.Controllers
             _awsS3Service = awsS3Service;
         }
 
-        /// <summary>
-        /// Crear Slide con imagen en base64
-        /// </summary>
+        #region Sample request
         /// <remarks>
         /// Sample request:
         ///
@@ -71,8 +70,16 @@ namespace OngProject.Controllers
         ///         }
         ///     }
         /// </remarks>
-        /// <response code="201">Creada con exito</response>
-        [HttpPost()]
+        #endregion
+        #region Documentation
+        [SwaggerOperation(Summary = "Create Slides with ImageB64", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Created. Returns the id of the created object.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
+        [HttpPost]
         public async Task<IActionResult> CreateSlideImageB64(SlideCreateDTO newSlide)
         {
             if (!ModelState.IsValid)
@@ -106,9 +113,7 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
-        /// <summary>
-        /// Subir imagen con upload al bucket - jpg o png
-        /// </summary>
+        #region Sample request
         /// <remarks>
         /// Sample request:
         ///
@@ -117,7 +122,15 @@ namespace OngProject.Controllers
         ///         upload file
         ///     }
         /// </remarks>
-        /// <response code="201">Creada con exito</response>
+        #endregion
+        #region Documentation
+        [SwaggerOperation(Summary = "Create Slides", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Created. Returns the id of the created object.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpPost("File")]
         public async Task<IActionResult> CreateSlideFile(IFormFile file)
         {
@@ -194,8 +207,15 @@ namespace OngProject.Controllers
         //    return Ok(preSignedUrls);
         //}
         #endregion
-
-        [HttpGet()]
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "List of all Slides", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns a list of existing Slides")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var slide = _unitOfWork.Context.Slides.AsQueryable();
@@ -204,11 +224,19 @@ namespace OngProject.Controllers
 
             var slides = await slide.AsNoTracking().ToListAsync();
 
-            var slideDTO = _mapper.Map<IEnumerable<SlideListDTO>>(slides);
+            var slideDto = _mapper.Map<IEnumerable<SlideListDTO>>(slides);
 
-            return new OkObjectResult(slideDTO);
+            return new OkObjectResult(slideDto);
         }
-
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "Get slide details by id", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns the slide details.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(SlideDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -218,11 +246,19 @@ namespace OngProject.Controllers
             if (slide == null)
                 return NotFound();
 
-            var slideDTO = _mapper.Map<SlideDTO>(slide);
+            var slideDto = _mapper.Map<SlideDTO>(slide);
 
-            return new OkObjectResult(slideDTO);
+            return new OkObjectResult(slideDto);
         }
         
+        #region Documentation
+        [SwaggerOperation(Summary = "Get Image details by id", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns the slide details.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpGet("ImageById/{id}")]
         public async Task<IActionResult> GetImageById(int id)
         {
@@ -236,13 +272,22 @@ namespace OngProject.Controllers
             var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" + image[4].ToString());
             return File(response.ResponseStream, response.Headers.ContentType);
         }
-
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "Modifies an existing Slide", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Updated. Returns nothing")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, SlideCreateDTO slideCreateDto)
         {
             var entity = await _slideService.GetById(id);
 
-            if (entity is not null) 
+            if (entity is null) 
                 return NotFound();
 
             await _slideService.UpdateSlide(entity, slideCreateDto);
@@ -251,7 +296,15 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(slideDto);
         }
-
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "Soft delete an existing Slide", Description = "Requires admin privileges")]
+        [SwaggerResponse(204, "Deleted. Returns nothing.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -265,12 +318,6 @@ namespace OngProject.Controllers
 
             return Ok(slide);
         }
-
-        //[HttpDelete("DeleteImage")]
-        //public async Task<IActionResult> Delete(string imageName)
-        //{
-        //    var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" + imageName);
-        //    return File(response.ResponseStream, response.Headers.ContentType);
-        //}
+        
     }
 }

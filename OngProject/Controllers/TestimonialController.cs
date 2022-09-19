@@ -10,6 +10,7 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
@@ -27,25 +28,48 @@ namespace OngProject.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "List of all Testimonials.", Description = ".")]
+        [SwaggerResponse(200, "Success. Returns a list of existing Slides.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
+        [HttpGet]
+        [Route("api/testimonials")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TestimonialDTO>))]
+        public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
+        {
+            //Paginacion
+            var queryable = _unitOfWork.Context.Testimonials.AsQueryable();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDto.CantidadRegistroPorPagina);
 
-        #region Documentacion
-        /// <summary>
-        /// Endpoint para el manejo de la creacion de Testimonios.Se debe ser ADMINISTRADOR
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
+            //var testimonials = await _testimonialService.GetAllAsync();
+            var testimonials = await queryable.Paginar(paginacionDto).ToListAsync();
+            var testimonialsDto = _mapper.Map<IEnumerable<TestimonialDTO>>(testimonials);
+
+            return new OkObjectResult(testimonialsDto);
+        }
+
+        #region Documentation
+        [SwaggerOperation(Summary = "Create a Testimony.",Description = "Requires admin privileges.")]
+        [SwaggerResponse(200, "Created. Returns the id of the created object.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPost]
         [Route("/testimonials")]
-        public async Task<IActionResult> Create(TestimonialDTO testimonial)
+        public async Task<IActionResult> Create(TestimonialDTO testimonialDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var _testimonial = _mapper.Map<Testimonials>(testimonial);
-            var created = await _testimonialService.CreateAsync(_testimonial);
+            var testimonial = _mapper.Map<Testimonials>(testimonialDto);
+            var created = await _testimonialService.CreateAsync(testimonial);
 
             if (created)
                 _unitOfWork.Commit();
@@ -53,12 +77,14 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
-        #region Documentacion
-        /// <summary>
-        /// Endpoint para actualizar un testimonio que se consigue al buscarlo por id.Se debe ser ADMINISTRADOR 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
+        #region Documentation
+        [SwaggerOperation(Summary = "Modifies an existing Testimony",Description = "Requires admin privileges")]
+        [SwaggerResponse(204, "Updated. Returns nothing.")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPut]
         [Route("/testimonials/{id}")]
@@ -77,35 +103,13 @@ namespace OngProject.Controllers
             return NotFound();
         }
 
-        #region Documentacion
-        /// <summary>
-        /// Endpoint para obtener la lista de los Testimonios existentes.Se debe ser usuario ADMINISTRADOR
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        #endregion
-        [HttpGet]
-        [Route("api/testimonials")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TestimonialDTO>))]
-        public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
-        {
-            //Paginacion
-            var queryable = _unitOfWork.Context.Testimonials.AsQueryable();
-            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDto.CantidadRegistroPorPagina);
-
-            //var testimonials = await _testimonialService.GetAllAsync();
-            var testimonials = await queryable.Paginar(paginacionDto).ToListAsync();
-            var testimonialsDTO = _mapper.Map<IEnumerable<TestimonialDTO>>(testimonials);
-
-            return new OkObjectResult(testimonialsDTO);
-        }
-
-        #region Documentacion
-        /// <summary>
-        /// Endpoint que borra un testimonio que se busca por su id.Se debe ser ADMINISTRADOR 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
+        #region Documentation
+        [SwaggerOperation(Summary = "Soft delete an existing Testimony", Description = "Requires admin privileges")]
+        [SwaggerResponse(204, "Deleted. Returns nothing.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpDelete]
         [Route("/testimonials/{id}")]

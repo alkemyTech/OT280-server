@@ -10,8 +10,8 @@ using OngProject.Core.Helper;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
-using OngProject.Services;
 using OngProject.Services.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
@@ -26,45 +26,18 @@ namespace OngProject.Controllers
 
         public NewController(INewService newService, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._newService = newService;
-            this._unitOfWork = unitOfWork;
-            this._mapper = mapper;
+            _newService = newService;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
+        
 
         #region Documentacion
-
-        /// <summary>
-        /// Endpoint para eliminar una novedad por su id.
-        /// </summary>
-        /// <returns>Objeto de la clase Novedades</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-
-        #endregion
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var _new = await _newService.GetById(id);
-
-            if (_new == null)
-                return BadRequest();
-
-            _newService.DeleteNew(_new);
-            _unitOfWork.Commit();
-
-            NewDeleteResponseDTO _newDTO = 
-                _mapper.Map<NewDeleteResponseDTO>(_new);
-
-            return Ok(_newDTO);
-        }
-
-        #region Documentacion
-
-        /// <summary>
-        /// Endpoint para listar todas las novedades existentes en el sistema
-        /// </summary>
-        /// <returns>Lista de novedades como News[]</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
+        [SwaggerOperation(Summary = "List of all News", Description = ".")]
+        [SwaggerResponse(200, "Success. Returns a list of existing News.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpGet]        
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<NewsDTO>))]
@@ -76,20 +49,18 @@ namespace OngProject.Controllers
 
             //var news = await _newService.GetAllAsync();
             var news = await queryable.Paginar(paginacionDto).ToListAsync();
-            var newsDTO = _mapper.Map<IEnumerable<NewsDTO>>(news);
+            var newsDto = _mapper.Map<IEnumerable<NewsDTO>>(news);
 
-            return new OkObjectResult(newsDTO);
+            return new OkObjectResult(newsDto);
         }
 
         #region Documentacion
-
-        /// <summary>
-        /// Endpoint para obtener los datos de una novedad por su id.
-        /// </summary>
-        /// <returns>Objeto de la clase Novedades</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-
+        [SwaggerOperation(Summary = "Get News details by id", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns the News details")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(NewsDTO))]
@@ -103,20 +74,21 @@ namespace OngProject.Controllers
                 return NotFound();
             }
 
-            var newsDTO = _mapper.Map<NewsDTO>(news);
+            var newsDto = _mapper.Map<NewsDTO>(news);
 
-            return new OkObjectResult(newsDTO);
+            return new OkObjectResult(newsDto);
         }
 
         #region Documentation
-        /// <summary>
-        /// Alta de novedad. 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
+        [SwaggerOperation(Summary = "Create News", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Created. Returns the id of the created object.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPost]        
-        public async Task<IActionResult> Create(CreateNewsDTO createNewsDTO)
+        public async Task<IActionResult> Create(CreateNewsDTO createNewsDto)
         {
             if (!ModelState.IsValid)
             {
@@ -125,7 +97,7 @@ namespace OngProject.Controllers
 
             try
             {
-                var news = _mapper.Map<News>(createNewsDTO);
+                var news = _mapper.Map<News>(createNewsDto);
                 var created = await _newService.CreateAsync(news);
 
                 if (created)
@@ -140,28 +112,55 @@ namespace OngProject.Controllers
         }
 
         #region Documentation
-        /// <summary>
-        /// Actualización de novedad existente
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="404">No encontrado</response>
+        [SwaggerOperation(Summary = "Modifies an existing News", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Updated. Returns the object News updated")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPut]        
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditNewDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Update(EditNewDTO editNewDTO)
+        public async Task<ActionResult> Update(EditNewDTO editNewDto)
         {
-            var entity = await _newService.GetById(editNewDTO.NewId);
+            var entity = await _newService.GetById(editNewDto.NewId);
 
             if (ModelState.IsValid && entity != null)
             {
-                await _newService.UpdateNews(entity, editNewDTO);
+                await _newService.UpdateNews(entity, editNewDto);
                 _unitOfWork.Commit();
 
-                return new OkObjectResult(editNewDTO);
+                return new OkObjectResult(editNewDto);
             }
 
             return NotFound();
-        }                 
+        }   
+        
+        #region Documentacion
+        [SwaggerOperation(Summary = "Soft delete an existing News", Description = "Requires admin privileges")]
+        [SwaggerResponse(204, "Deleted. Returns nothing.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var news = await _newService.GetById(id);
+
+            if (news == null)
+                return BadRequest();
+
+            _newService.DeleteNew(news);
+            _unitOfWork.Commit();
+
+            NewDeleteResponseDTO newDto = 
+                _mapper.Map<NewDeleteResponseDTO>(news);
+
+            return Ok(newDto);
+        }
     }
 }
