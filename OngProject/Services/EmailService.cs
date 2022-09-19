@@ -45,7 +45,14 @@ namespace OngProject.Services
 
         public void SendSuccessContact(string email)
         {
-            throw new System.NotImplementedException();
+            var dynamicTemplateData = generateDynamicTemplateData
+                 (
+                     _subject: "¡Somos Más!",
+                     _title: "¡Somos Más!",
+                     _body: "Su formulario ha sido satisfactorio. Gracias por su contacto."
+                 );
+
+            Execute(email, "TemplateId:Generic", dynamicTemplateData).Wait();
         }
 
         private object generateDynamicTemplateData(string _subject, string _title, string _body)

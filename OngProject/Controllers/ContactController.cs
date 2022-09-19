@@ -19,12 +19,14 @@ namespace OngProject.Controllers
         private readonly IContactService _contactService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
-        public ContactController(IContactService contactService, IUnitOfWork unitOfWork, IMapper mapper)
+        public ContactController(IContactService contactService, IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService)
         {
             _contactService = contactService;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         [HttpPost]
@@ -36,8 +38,11 @@ namespace OngProject.Controllers
             var newContact = _mapper.Map<Contact>(contactDTO);
             var created = await _contactService.CreateAsync(newContact);
 
-            if (created)
-                _unitOfWork.Commit();
+            if (created && _emailService.IsConfigured())
+            {
+                _emailService.SendSuccessContact(contactDTO.Email);
+                _unitOfWork.Commit();                                  
+            }
 
             return Created("Created", new { Response = StatusCode(201) });
         }
