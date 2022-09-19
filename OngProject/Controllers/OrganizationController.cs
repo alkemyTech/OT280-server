@@ -58,7 +58,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(403, "Unauthorized user.")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpPost("public")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditOrganizationDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

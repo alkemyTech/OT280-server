@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
@@ -44,6 +46,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
         [SwaggerResponse(403, "Unauthorized user")]
         #endregion
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -57,7 +60,6 @@ namespace OngProject.Controllers
             return new OkObjectResult(commentDto);
         }
         
-        //[Authorize(Roles = "standard")]
         #region Documentation
         [SwaggerOperation(Summary = "Create Comment.",Description = "Requires user privileges.")]
         [SwaggerResponse(200, "Created. Returns the id of the created object.")]
@@ -65,6 +67,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpPost]
         public async Task<IActionResult> Create(CommentDTO comment)
         {
@@ -103,6 +106,7 @@ namespace OngProject.Controllers
         #endregion
         [HttpGet]
         [Route("~/news/{id}/comments")]
+        [Authorize(Roles = "admin, standard")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByNewId(int id)
@@ -128,7 +132,7 @@ namespace OngProject.Controllers
         #endregion
         [HttpPut]
         [Route("/comments/{id}")]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, standard")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentDTO))]
         [ProducesResponseType(StatusCodes.Status403Forbidden)] 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -163,7 +167,7 @@ namespace OngProject.Controllers
         #endregion
         [HttpDelete]
         [Route("/comments/{id}")]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, standard")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentDTO))]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

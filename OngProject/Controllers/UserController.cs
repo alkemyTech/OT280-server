@@ -4,13 +4,14 @@ using OngProject.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using OngProject.Core.Models.DTOs.Account;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -89,6 +90,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(404, "NotFound. Entity id not found.")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch(string id, [FromBody] JsonPatchDocument<UpdateUserDto> patchDocument)
         {
@@ -114,6 +116,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(404, "NotFound. Entity id not found.")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
