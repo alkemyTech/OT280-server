@@ -14,7 +14,7 @@ using OngProject.Core.Models.DTOs.Account;
 
 namespace OngProject.Controllers
 {
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -86,6 +86,7 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
+        [Authorize(Roles = "admin, standard")]
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch(string id, [FromBody] JsonPatchDocument<UpdateUserDto> patchDocument)
         {
@@ -104,7 +105,6 @@ namespace OngProject.Controllers
         }
 
 
-
         #region Documentacion
 
         /// <summary>
@@ -116,7 +116,8 @@ namespace OngProject.Controllers
         /// <response code="403">Usuario no autorizado</response>
         /// <response code="404">Recurso no encontrado</response>
 
-        #endregion
+        #endregion        
+        [Authorize(Roles = "admin, standard")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

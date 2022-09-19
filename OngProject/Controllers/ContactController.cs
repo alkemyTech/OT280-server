@@ -49,7 +49,7 @@ namespace OngProject.Controllers
 
         
         [HttpGet]
-        //[Authorize(Roles="Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Contact>>> GetsAll()
         {
             var contacts=await _contactService.GetAllAsync();

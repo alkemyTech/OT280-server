@@ -35,7 +35,7 @@ namespace OngProject.Controllers
             this._mapper = mapper;
         }
 
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -49,7 +49,7 @@ namespace OngProject.Controllers
             return new OkObjectResult(commentDTO);
         }
 
-        //[Authorize(Roles = "standard")]
+        [Authorize(Roles = "admin, standard")]
         [HttpPost]
         public async Task<IActionResult> Create(CommentDTO comment)
         {
@@ -80,6 +80,7 @@ namespace OngProject.Controllers
 
         [HttpGet]
         [Route("~/news/{id}/comments")]
+        [Authorize(Roles = "admin, standard")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByNewId(int id)
@@ -96,7 +97,7 @@ namespace OngProject.Controllers
 
         [HttpPut]
         [Route("/comments/{id}")]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, standard")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentDTO))]
         [ProducesResponseType(StatusCodes.Status403Forbidden)] 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -123,7 +124,7 @@ namespace OngProject.Controllers
 
         [HttpDelete]
         [Route("/comments/{id}")]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, standard")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CommentDTO))]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -41,7 +41,7 @@ namespace OngProject.Controllers
             return new OkObjectResult(organizationDTO);
         }
 
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "admin")]
         [HttpPost("public")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditOrganizationDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

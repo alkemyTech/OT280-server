@@ -14,7 +14,7 @@ using OngProject.Core.Models.DTOs;
 
 namespace OngProject.Controllers
 {
-    //[Authorize(Roles="admin")]
+    [Authorize(Roles = "admin")]
     [Route("categories")]
     [ApiController]
     public class CategoryController : ControllerBase
@@ -40,6 +40,7 @@ namespace OngProject.Controllers
         /// <response code="401">Credenciales no válidas</response>
 
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryGetAllNamesResponse>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
