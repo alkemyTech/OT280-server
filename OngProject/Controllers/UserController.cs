@@ -86,19 +86,6 @@ namespace OngProject.Controllers
             return Created("Created", new { Response = StatusCode(201) });
         }
 
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Update(int id, Users user)
-        //{
-        //    //if (id != user.Id)
-        //    //    return BadRequest();
-
-        //    await _genericRepository.Update(user);
-        //    _unitOfWork.Commit();
-
-        //    // Following up the REST standart on update we need to return NoContent
-        //    return NoContent();
-        //}
-
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch(string id, [FromBody] JsonPatchDocument<UpdateUserDto> patchDocument)
         {
