@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using SendGrid.Helpers.Mail;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OngProject.Controllers
@@ -29,12 +31,12 @@ namespace OngProject.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
-            var organization = await _organizationService.GetById(id);
+            var organization = await _organizationService.GetByIdSlides(id);
+
+            organization.Slides.OrderByDescending(o => o.Order);
 
             if (organization == null)
-            {
                 return NotFound();
-            }
 
             var organizationDTO = _mapper.Map<OrganizationDTO>(organization);
 

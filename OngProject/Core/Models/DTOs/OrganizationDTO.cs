@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OngProject.Core.Models.DTOs.Slide;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace OngProject.Core.Models.DTOs
 {
@@ -11,7 +13,8 @@ namespace OngProject.Core.Models.DTOs
 
         [Required(ErrorMessage = "El campo Image es requerido")]
         [StringLength(100)]
-        public string Image { get; set; }
+
+        public List<SlideDTO> Slides { get; set; }
 
         [StringLength(100)]
         public string? Address { get; set; }

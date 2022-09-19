@@ -17,9 +17,6 @@ namespace OngProject.Core.Models.DTOs.Slide
 
         public int Order { get; set; }
 
-        //[ForeignKey("Organization")]
-        //public int OrganizationId { get; set; }
-
         public Organization Organization { get; set; }
     }
 }

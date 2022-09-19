@@ -1,16 +1,18 @@
 ﻿using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
+using OngProject.Repositories;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
+using System.Threading.Tasks;
 
 namespace OngProject.Services
 {
     public class OrganizationService : GenericService<Organization>, IOrganizationService
     {
-        private IOrganizationRepository _organizationRepository;
+        private readonly IOrganizationRepository _organizationRepository;
         public OrganizationService(IOrganizationRepository organizationRepository) : base(organizationRepository)
         {
-            this._organizationRepository = organizationRepository;
+            _organizationRepository = organizationRepository;
         }
 
         public async void UpdateOrganization(Organization organization, EditOrganizationDTO editOrganizationDTO)
@@ -24,6 +26,11 @@ namespace OngProject.Services
             organization.AboutUsText = editOrganizationDTO.AboutUsText;
 
             await _organizationRepository.Update(organization);
+        }
+        
+        public async Task<Organization> GetByIdSlides(int id)
+        {
+            return await _organizationRepository.GetByIdSlides(id);
         }
     }
 }

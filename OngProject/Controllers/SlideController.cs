@@ -6,18 +6,10 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Amazon.S3.Model;
-using System.IO;
 using System.Linq;
 using OngProject.Core.Models.DTOs.Slide;
-using System;
-using OngProject.Services;
-using Microsoft.IdentityModel.Tokens;
-using EllipticCurve.Utils;
 using Microsoft.EntityFrameworkCore;
-using OngProject.Core.Models.DTOs;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace OngProject.Controllers
 {
@@ -89,10 +81,8 @@ namespace OngProject.Controllers
 
             var slide = await _slideService.GetAllAsync();
             
-            if (slide.Count() == 0)
-            {
+            if (!slide.Any()) 
                 _slide.Order = 1;
-            }
             else
             {
                 var slideTable = _mapper.Map<Slide>(slide.OrderByDescending(x => x.Order).First());
