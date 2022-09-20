@@ -212,9 +212,8 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(slideDto);
         }
-<<<<<<< HEAD
 
-=======
+        
         
         #region Documentation
         [SwaggerOperation(Summary = "Get Image details by id", Description = "Requires admin privileges")]
@@ -224,7 +223,6 @@ namespace OngProject.Controllers
         [SwaggerResponse(403, "Unauthorized user.")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
->>>>>>> develop
         [HttpGet("ImageById/{id}")]
         public async Task<IActionResult> GetImageById(int id)
         {
@@ -252,12 +250,8 @@ namespace OngProject.Controllers
         public async Task<IActionResult> Update(int id, SlideCreateDTO slideCreateDto)
         {
             var entity = await _slideService.GetById(id);
-
-<<<<<<< HEAD
-            if (entity is not null)
-=======
-            if (entity is null) 
->>>>>>> develop
+            
+            if (entity is null)
                 return NotFound();
 
             await _slideService.UpdateSlide(entity, slideCreateDto);
