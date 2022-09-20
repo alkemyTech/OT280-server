@@ -115,6 +115,8 @@ namespace OngProject
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OngProject v1"));
             }
 
+            app.UseStatusCodePages();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
