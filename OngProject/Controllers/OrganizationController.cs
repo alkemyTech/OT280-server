@@ -8,6 +8,7 @@ using OngProject.Services.Interfaces;
 using SendGrid.Helpers.Mail;
 using System.Linq;
 using System.Threading.Tasks;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
@@ -26,6 +27,14 @@ namespace OngProject.Controllers
             _mapper = mapper;
         }
 
+        #region Documentation
+        [SwaggerOperation(Summary = "Get details of the organization by id", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns the organization details.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpGet("public/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OrganizationDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -38,25 +47,33 @@ namespace OngProject.Controllers
             if (organization == null)
                 return NotFound();
 
-            var organizationDTO = _mapper.Map<OrganizationDTO>(organization);
+            var organizationDto = _mapper.Map<OrganizationDTO>(organization);
 
-            return new OkObjectResult(organizationDTO);
+            return new OkObjectResult(organizationDto);
         }
-
-        [Authorize(Roles = "Administrator")]
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "Creates a new Organization", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns nothing")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
+        [Authorize(Roles = "admin")]
         [HttpPost("public")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditOrganizationDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(EditOrganizationDTO editOrganizationDTO)
+        public async Task<IActionResult> Update(EditOrganizationDTO editOrganizationDto)
         {
-            var entity = await _organizationService.GetById(editOrganizationDTO.OrganizationId);
+            var entity = await _organizationService.GetById(editOrganizationDto.OrganizationId);
 
             if (ModelState.IsValid && entity != null)
             {
-                _organizationService.UpdateOrganization(entity, editOrganizationDTO);
+                _organizationService.UpdateOrganization(entity, editOrganizationDto);
                 _unitOfWork.Commit();
 
-                return new OkObjectResult(editOrganizationDTO);
+                return new OkObjectResult(editOrganizationDto);
             }
 
             return NotFound();

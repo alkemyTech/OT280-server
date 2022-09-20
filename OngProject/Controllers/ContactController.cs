@@ -8,6 +8,7 @@ using OngProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
@@ -29,27 +30,39 @@ namespace OngProject.Controllers
             _emailService = emailService;
         }
 
+        #region Documentation
+        [SwaggerOperation(Summary = "Create a Contact.", Description = ".")]
+        [SwaggerResponse(200, "Created.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpPost]
-        public async Task<IActionResult> Create(ContactCreateDTO contactDTO)
+        public async Task<IActionResult> Create(ContactCreateDTO contactDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var newContact = _mapper.Map<Contact>(contactDTO);
+            var newContact = _mapper.Map<Contact>(contactDto);
             var created = await _contactService.CreateAsync(newContact);
 
             if (created && _emailService.IsConfigured())
             {
-                _emailService.SendSuccessContact(contactDTO.Email);
+                _emailService.SendSuccessContact(contactDto.Email);
                 _unitOfWork.Commit();                                  
             }
 
             return Created("Created", new { Response = StatusCode(201) });
         }
 
-        
+        #region Documentation
+        [SwaggerOperation(Summary = "List of all Contacts",Description = "Require admin privileges")]
+        [SwaggerResponse(200, "Success. Returns a list of existing Contacts")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
+        #endregion
         [HttpGet]
-        //[Authorize(Roles="Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<IEnumerable<Contact>>> GetsAll()
         {
             var contacts=await _contactService.GetAllAsync();

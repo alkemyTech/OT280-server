@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
@@ -8,13 +7,15 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Helper;
 using OngProject.Core.Models.DTOs;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
-    //[Authorize(Roles="admin")]
+    [Authorize(Roles = "admin")]
     [Route("categories")]
     [ApiController]
     public class CategoryController : ControllerBase
@@ -25,21 +26,19 @@ namespace OngProject.Controllers
 
         public CategoryController(ICategoryService categoryService, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._categoryService = categoryService;
-            this._unitOfWork = unitOfWork;
-            this._mapper = mapper;
+            _categoryService = categoryService;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        #region Documentacion
-
-        /// <summary>
-        /// Endpoint para listar todas las categorias existentes en el sistema. Rol: ADMIN
-        /// </summary>
-        /// <returns>Lista de categorias como Categories[]</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-
+        #region Documentation
+        [SwaggerOperation(Summary = "List of all Categories", Description = "Require admin privileges")]
+        [SwaggerResponse(200, "Success. Returns a list of existing Categories")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user or wrong jwt token")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
+        [Authorize(Roles = "admin, standard")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoryGetAllNamesResponse>))]
         public async Task<IActionResult> GetAll([FromQuery] PaginacionDto paginacionDto)
@@ -49,20 +48,18 @@ namespace OngProject.Controllers
             await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDto.CantidadRegistroPorPagina);
             
             var categories = await queryable.Paginar(paginacionDto).ToListAsync();
-            var categoriesDTO = _mapper.Map<IEnumerable<CategoryGetAllNamesResponse>>(categories);
+            var categoriesDto = _mapper.Map<IEnumerable<CategoryGetAllNamesResponse>>(categories);
 
-            return new OkObjectResult(categoriesDTO);
+            return new OkObjectResult(categoriesDto);
         }
 
-        #region Documentacion
-
-        /// <summary>
-        /// Endpoint para obtener los datos de una categoria por su id. Rol: ADMIN
-        /// </summary>
-        /// <returns>Objeto de la clase Categories</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-
+        #region Documentation
+        [SwaggerOperation(Summary = "Get Category details by Id", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns Category details")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDTO))]
@@ -76,31 +73,29 @@ namespace OngProject.Controllers
                 return NotFound();
             }
 
-            var categoryDTO = _mapper.Map<CategoryDTO>(category);
+            var categoryDto = _mapper.Map<CategoryDTO>(category);
 
-            return new OkObjectResult(categoryDTO);
+            return new OkObjectResult(categoryDto);
         }
 
         #region Documentacion
-
-        /// <summary>
-        /// Endpoint para el manejo de la creacion de Categorias. Rol: ADMIN
-        /// </summary>
-        /// <returns>Código HTTP con el resultado de la operacion</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-
+        [SwaggerOperation(Summary = "Creates a new Category", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPost]
-        public async Task<IActionResult> Create(CategoryDTO categoryDTO)
+        public async Task<IActionResult> Create(CategoryDTO categoryDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var _category = _mapper.Map<Categories>(categoryDTO);
-            var created = await _categoryService.CreateAsync(_category);
+            var category = _mapper.Map<Categories>(categoryDto);
+            var created = await _categoryService.CreateAsync(category);
 
             if (created)
                 _unitOfWork.Commit();
@@ -109,18 +104,18 @@ namespace OngProject.Controllers
         }
         
         #region Documentacion
-        
-        /// <summary>
-        /// Endpoint para actualizar una category que se consigue al buscarlo por id.Rol: ADMIN
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
+        [SwaggerOperation(Summary = "Modifies an existing Category", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success.")]
+        [SwaggerResponse(400, "BadRequest. Object not modified, try again")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CategoryDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(int id, CategoryDTO editCategoryDTO)
+        public async Task<IActionResult> Update(int id, CategoryDTO editCategoryDto)
         {
             var entity = await _categoryService.GetById(id);
 
@@ -129,21 +124,20 @@ namespace OngProject.Controllers
                 return NotFound();
             }
 
-            await _categoryService.UpdateCategory(entity, editCategoryDTO);
-            var categoryDTO = _mapper.Map<CategoryDTO>(entity);
+            await _categoryService.UpdateCategory(entity, editCategoryDto);
+            var categoryDto = _mapper.Map<CategoryDTO>(entity);
             _unitOfWork.Commit();
 
-            return new OkObjectResult(categoryDTO);
+            return new OkObjectResult(categoryDto);
         }
 
         #region Documentacion
-
-        /// <summary>
-        /// Endpoint que elimina una category del sistema por su id. Rol: ADMIN
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-
+        [SwaggerOperation(Summary = "Soft delete an existing Category", Description = "Requires admin privileges")]
+        [SwaggerResponse(204, "Deleted.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

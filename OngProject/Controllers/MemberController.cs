@@ -9,9 +9,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Helper;
+using Swashbuckle.AspNetCore.Annotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OngProject.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class MemberController : ControllerBase
@@ -28,13 +31,11 @@ namespace OngProject.Controllers
         }
         
         #region Documentacion
-        
-        /// <summary>
-        /// Endpoint para obtener la lista de los Members existentes.Se debe ser usuario ADMINISTRADOR/STANDARD 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
+        [SwaggerOperation(Summary = "List of all Members.", Description = "Requires admin privileges.")]
+        [SwaggerResponse(200, "Success. Returns a list of existing Members.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<MemberDTO>))]
@@ -46,19 +47,17 @@ namespace OngProject.Controllers
                 
             //var members = await _memberService.GetAllAsync();
             var members = await queryable.Paginar(paginacionDto).ToListAsync();
-            var membersDTO = _mapper.Map<IEnumerable<MemberDTO>>(members);
+            var membersDto = _mapper.Map<IEnumerable<MemberDTO>>(members);
 
-            return new OkObjectResult(membersDTO);
+            return new OkObjectResult(membersDto);
         }
         
         #region Documentacion
-        
-        /// <summary>
-        /// Endpoint para obtener un member por id.Se debe ser ADMINISTRADOR 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
+        [SwaggerOperation(Summary = "Get member details by id.", Description = ".")]
+        [SwaggerResponse(200, "Success. Returns the slide details.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(MemberDTO))]
@@ -72,30 +71,29 @@ namespace OngProject.Controllers
                 return NotFound();
             }
 
-            var memberDTO = _mapper.Map<MemberDTO>(member);
+            var memberDto = _mapper.Map<MemberDTO>(member);
 
-            return new OkObjectResult(memberDTO);
+            return new OkObjectResult(memberDto);
         }
 
         #region Documentacion
-        
-        /// <summary>
-        /// Endpoint para el manejo de la creacion de Members.Se debe ser ADMINISTRADOR 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
+        [SwaggerOperation(Summary = "Create Member.",Description = "Requires user or admin privileges.")]
+        [SwaggerResponse(200, "Created. Returns the id of the created object.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPost]
-        public async Task<IActionResult> Create(MemberDTO member)
+        public async Task<IActionResult> Create(MemberDTO memberDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var _member = _mapper.Map<Members>(member);
-            var created = await _memberService.CreateAsync(_member);
+            var member = _mapper.Map<Members>(memberDto);
+            var created = await _memberService.CreateAsync(member);
 
             if (created)
                 _unitOfWork.Commit();
@@ -104,13 +102,12 @@ namespace OngProject.Controllers
         }
         
         #region Documentacion
-        
-        /// <summary>
-        /// Endpoint que borra un member que se busca por su id.Se debe ser ADMINISTRADOR 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
+        [SwaggerOperation(Summary = "Soft delete an existing Member.", Description = "Requires admin privileges.")]
+        [SwaggerResponse(204, "Deleted. Returns nothing.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -127,31 +124,30 @@ namespace OngProject.Controllers
         }
 
         #region Documentacion
-        
-        /// <summary>
-        /// Endpoint para actualizar un member que se consigue al buscarlo por id.Se debe ser ADMINISTRADOR 
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no validas</response>
-        
+        [SwaggerOperation(Summary = "Modifies an existing Member.", Description = ".")]
+        [SwaggerResponse(204, "Updated. Returns nothing.")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EditMemberDTO))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Update(EditMemberDTO editMemberDTO)
+        public async Task<IActionResult> Update(EditMemberDTO editMemberDto)
         {
-            var entity = await _memberService.GetById(editMemberDTO.MemberId);
+            var entity = await _memberService.GetById(editMemberDto.MemberId);
 
             if (entity == null)
             {
                 return NotFound();
             }
 
-            var member = await _memberService.UpdateMember(entity, editMemberDTO);
-            var memberDTO = _mapper.Map<EditMemberDTO>(entity);
+            await _memberService.UpdateMember(entity, editMemberDto);
+            var memberDto = _mapper.Map<EditMemberDTO>(entity);
             _unitOfWork.Commit();
 
-            return new OkObjectResult(memberDTO);
+            return new OkObjectResult(memberDto);
 
         }
     }
