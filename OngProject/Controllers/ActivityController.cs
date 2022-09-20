@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Core.Models.DTOs;
 using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
@@ -22,30 +21,31 @@ namespace OngProject.Controllers
 
         public ActivityController(IActivityService activityService, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._activityService = activityService;
-            this._unitOfWork = unitOfWork;
-            this._mapper = mapper;
+            _activityService = activityService;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         #region Documentation
-        /// <summary>
-        /// Alta de actividad al sistema. Rol: admin
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
+        [SwaggerOperation(Summary = "Create a Activity", Description = "Requires admin privileges.")]
+        [SwaggerResponse(200, "Created. Returns the id of the created object.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPost]
         [Route("/activities")]
         
-        public async Task<IActionResult> Create(ActivityDTO activity)
+        public async Task<IActionResult> Create(ActivityDTO activityDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            var _activity = _mapper.Map<Activities>(activity);
-            var created = await _activityService.CreateAsync(_activity);
+            var activity = _mapper.Map<Activities>(activityDto);
+            var created = await _activityService.CreateAsync(activity);
 
             if (created)
                 _unitOfWork.Commit();
@@ -54,11 +54,12 @@ namespace OngProject.Controllers
         }
 
         #region Documentation
-        /// <summary>
-        /// Actualización de actividad existente. Rol: admin
-        /// </summary>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
+        [SwaggerOperation(Summary = "Update a Activity",Description = "Require admin privileges")]
+        [SwaggerResponse(204, "Success. Returns nothing.")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user or wrong jwt token")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
         [HttpPut]
         [Route("/activities/{id}")]

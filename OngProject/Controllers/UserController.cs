@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
 using OngProject.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.EntityFrameworkCore;
 using OngProject.Core.Models.DTOs.Account;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OngProject.Controllers
 {
@@ -25,19 +22,18 @@ namespace OngProject.Controllers
 
         public UserController(IGenericRepository<Users> genericRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            this._genericRepository = genericRepository;
-            this._unitOfWork = unitOfWork;
+            _genericRepository = genericRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        /// <summary>
-        /// Lista todos los usuarios existentes en el sistema. Rol: admin
-        /// </summary>
-        /// <returns>Lista de usuarios como Users[]</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-        /// <response code="403">Usuario no autorizado</response>
-        /// <response code="404">Recurso no encontrado</response>
+        #region Documentation
+        [SwaggerOperation(Summary = "List of all Users.", Description = "Requires admin privileges.")]
+        [SwaggerResponse(200, "Success. Returns a list of existing Users.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpGet]
         public async Task<IEnumerable<Users>> Get()
         {
@@ -45,14 +41,14 @@ namespace OngProject.Controllers
         }
         
 
-        /// <summary>
-        /// Se obtiene los datos de un usuario por su id. Rol: admin
-        /// </summary>
-        /// <returns>Objeto de la clase Users</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-        /// <response code="403">Usuario no autorizado</response>
-        /// <response code="404">Recurso no encontrado</response>
+        #region Documentation
+        [SwaggerOperation(Summary = "Get user details by id.", Description = "Requires admin privileges.")]
+        [SwaggerResponse(200, "Success. Returns the user details.")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpGet("{id}")]
         public async Task<IEnumerable<Users>> GetById(string id)
         {
@@ -61,15 +57,15 @@ namespace OngProject.Controllers
                 return (IEnumerable<Users>)NotFound();
             return (IEnumerable<Users>)Ok(user);
         }
-
-        /// <summary>
-        /// Creación de un ususario. Rol: admin
-        /// </summary>
-        /// <returns>Código HTTP con el resultado de la operacion</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-        /// <response code="403">Usuario no autorizado</response>
-        /// <response code="404">Recurso no encontrado</response>
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "Create Users", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Created. Returns the id of the created object.")]
+        [SwaggerResponse(400, "BadRequest. Object not created, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(403, "Unauthorized user.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Users users)
         {
@@ -85,7 +81,15 @@ namespace OngProject.Controllers
 
             return Created("Created", new { Response = StatusCode(201) });
         }
-
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "Modifies an existing Slide.", Description = "Requires user privileges.")]
+        [SwaggerResponse(204, "Updated. Returns nothing.")]
+        [SwaggerResponse(400, "BadRequest. Something went wrong, try again.")]
+        [SwaggerResponse(401, "Unauthenticated or wrong jwt token.")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [Authorize(Roles = "admin, standard")]
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch(string id, [FromBody] JsonPatchDocument<UpdateUserDto> patchDocument)
@@ -103,20 +107,15 @@ namespace OngProject.Controllers
 
             return NoContent();
         }
-
-
-        #region Documentacion
-
-        /// <summary>
-        /// Borra un usuario del sistema por su id. Rol: admin
-        /// </summary>
-        /// <returns>JSON del usuario borrado</returns>
-        /// <response code="200">Solicitud concretada con exito</response>
-        /// <response code="401">Credenciales no válidas</response>
-        /// <response code="403">Usuario no autorizado</response>
-        /// <response code="404">Recurso no encontrado</response>
-
-        #endregion        
+        
+        #region Documentation
+        [SwaggerOperation(Summary = "Soft Delete of an existing User", Description = "Requires admin privileges")]
+        [SwaggerResponse(200, "Success. Returns nothing")]
+        [SwaggerResponse(401, "Unauthenticated user or wrong jwt token")]
+        [SwaggerResponse(403, "Unauthorized user")]
+        [SwaggerResponse(404, "NotFound. Entity id not found.")]
+        [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
+        #endregion
         [Authorize(Roles = "admin, standard")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

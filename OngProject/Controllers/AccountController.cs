@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OngProject.Core.Models;
-using OngProject.Core.Models.DTOs;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -37,7 +35,8 @@ namespace OngProject.Controllers
         private readonly IHttpContextAccessor _accessor;
         private readonly IEmailService _emailService;
 
-        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, IConfiguration configuration, IEmailService emailService,
+        public AccountController(UserManager<Users> userManager, SignInManager<Users> signInManager, IMapper mapper, 
+            IConfiguration configuration, IEmailService emailService,
              IUnitOfWork unitOfWork, IHttpContextAccessor accessor) 
         {
             _userManager = userManager;
