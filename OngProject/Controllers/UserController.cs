@@ -118,14 +118,15 @@ namespace OngProject.Controllers
         #endregion
         [Authorize(Roles = "admin, standard")]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             var user = await _genericRepository.GetById(id);
 
             if (user == null)
                 return BadRequest();
 
-            await _genericRepository.DeleteAsync(user);
+            //await _genericRepository.DeleteAsync(user);
+            user.IsDeleted = true;
             _unitOfWork.Commit();
 
             return Ok(user);

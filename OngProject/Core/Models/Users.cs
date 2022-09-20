@@ -17,10 +17,7 @@ namespace OngProject.Core.Models
 
         [Column(TypeName = "varchar(max)")]
         public string Photo { get; set; }
-
-        [Timestamp]
-        public byte[] RowVersion { get; set; }
-
+        
         public bool IsDeleted { get; set; }
     }
 }
