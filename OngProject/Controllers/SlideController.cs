@@ -6,16 +6,9 @@ using OngProject.Repositories.Interfaces;
 using OngProject.Services.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Amazon.S3.Model;
-using System.IO;
 using System.Linq;
 using OngProject.Core.Models.DTOs.Slide;
-using System;
-using OngProject.Services;
-using Microsoft.IdentityModel.Tokens;
-using EllipticCurve.Utils;
 using Microsoft.EntityFrameworkCore;
-using OngProject.Core.Models.DTOs;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using Swashbuckle.AspNetCore.Annotations;
@@ -93,18 +86,19 @@ namespace OngProject.Controllers
             if (result.HttpStatusCode.ToString() != "OK")
                 return BadRequest();
 
-            var slide = await _slideService.GetAllAsync();
-            var slideTable = _mapper.Map<Slide>(slide.OrderByDescending(x => x.Order).First());
-
             var _slide = _mapper.Map<Slide>(newSlide);
 
-            if (slide == null)
+            var slide = await _slideService.GetAllAsync();
+            
+            if (!slide.Any()) 
                 _slide.Order = 1;
             else
+            {
+                var slideTable = _mapper.Map<Slide>(slide.OrderByDescending(x => x.Order).First());
                 _slide.Order = slideTable.Order + 1;
+            }
 
             _slide.ImageUrl = _awsS3Service.GetUrlRequest("slides/" + newSlide.ImageName);
-            //_slide.ImageUrl = newSlide.ImageName;
 
             var created = await _slideService.CreateAsync(_slide);
 
@@ -175,40 +169,7 @@ namespace OngProject.Controllers
         //    return Created("Created", new { Response = StatusCode(201) });
         //}
         #endregion
-
-        #region imagen con nombre del objeto en el bucket
-        //[HttpGet("Image")]
-        //public async Task<IActionResult> Get(string imageName)
-        //{
-        //    var response = await _amazonS3.GetObjectAsync(BucketName, "slides/" + imageName);
-        //    return File(response.ResponseStream, response.Headers.ContentType);
-        //}
-        #endregion
-
-        #region test para ver la urls de una lista de objetos
-        // test para ver la urls de una lista de objetos
-        // tiene time expire
-        //[HttpGet("GetUrls")]
-        //public async Task<IActionResult> GetList(string prefix)
-        //{
-        //    var request = _awsS3Service.ListObjectV2(prefix);
-
-        //    var response = await _amazonS3.ListObjectsV2Async(request);
-        //    var preSignedUrls = response.S3Objects.Select(o =>
-        //    {
-        //        var request = new GetPreSignedUrlRequest()
-        //        {
-        //            BucketName = BucketName,
-        //            Key = o.Key,
-        //            Expires = System.DateTime.UtcNow.AddDays(1)
-        //        };
-        //        return _amazonS3.GetPreSignedURL(request);
-        //    });
-
-        //    return Ok(preSignedUrls);
-        //}
-        #endregion
-        
+       
         #region Documentation
         [SwaggerOperation(Summary = "List of all Slides", Description = "Requires admin privileges")]
         [SwaggerResponse(200, "Success. Returns a list of existing Slides")]
@@ -251,6 +212,9 @@ namespace OngProject.Controllers
 
             return new OkObjectResult(slideDto);
         }
+<<<<<<< HEAD
+
+=======
         
         #region Documentation
         [SwaggerOperation(Summary = "Get Image details by id", Description = "Requires admin privileges")]
@@ -260,6 +224,7 @@ namespace OngProject.Controllers
         [SwaggerResponse(403, "Unauthorized user.")]
         [SwaggerResponse(500, "Internal server error. An error occurred while processing your request.")]
         #endregion
+>>>>>>> develop
         [HttpGet("ImageById/{id}")]
         public async Task<IActionResult> GetImageById(int id)
         {
@@ -288,7 +253,11 @@ namespace OngProject.Controllers
         {
             var entity = await _slideService.GetById(id);
 
+<<<<<<< HEAD
+            if (entity is not null)
+=======
             if (entity is null) 
+>>>>>>> develop
                 return NotFound();
 
             await _slideService.UpdateSlide(entity, slideCreateDto);

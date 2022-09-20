@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OngProject.Core.Models
@@ -18,7 +19,6 @@ namespace OngProject.Core.Models
           timestamps y softDeletes
           */
 
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrganizationId { get; set; }
@@ -33,6 +33,7 @@ namespace OngProject.Core.Models
         [StringLength(100)]
         public string Image { get; set; }
 
+        public List<Slide> Slides { get; set; }
 
         [StringLength(100)]
         public string Address { get; set; }
@@ -41,35 +42,28 @@ namespace OngProject.Core.Models
         //[Range(0, 20, ErrorMessage = " El valor del campo debe ser un número entre 0 y 20")]
         public int? Phone { get; set; }
 
-
         [Required(ErrorMessage = "El campo email es requerido")]
         [StringLength(100)]
         [EmailAddress(ErrorMessage = "El campo debe contener un formato de email")]
         public string Email { get; set; }
 
-
         [Required(ErrorMessage = "El campo welcomeText es requerido")]
         [StringLength(100)]
         public string WelcomeText { get; set; }
-
 
         [Required(ErrorMessage = "El campo aboutUsText es requerido")]
         [StringLength(100)]
         public string AboutUsText { get; set; }
 
-
         [Timestamp]
         public byte[] ChangeCheck { get; set; }
         public bool IsDeleted { get; set; }
 
-
         [StringLength(256)]
         public string FacebookUrl { get; set; }
 
-
         [StringLength(256)]
         public string LinkedinUrl { get; set; }
-
 
         [StringLength(256)]
         public string InstagramUrl { get; set; }
