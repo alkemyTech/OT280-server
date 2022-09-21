@@ -125,6 +125,8 @@ namespace OngProject
 
             app.UseAuthorization();
 
+            app.UseMiddleware<OwnerShipMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
