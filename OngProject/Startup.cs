@@ -18,6 +18,7 @@ using System.Text.Json.Serialization;
 using Amazon.S3;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 
 namespace OngProject
 {
@@ -38,7 +39,7 @@ namespace OngProject
                 .AddRoles<Roles>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             //Autenticacion
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(ops =>
@@ -70,25 +71,24 @@ namespace OngProject
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
+                    Description = "JWT Authorization header using the Bearer scheme.",
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer"
                 });
-                
+
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                { 
+                {
                     {
                         new OpenApiSecurityScheme
                         {
                             Reference = new OpenApiReference
                             {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
                             }
                         },
-                        new string[]{}
+                        new List<string>()
                     }
                 });
 
@@ -100,9 +100,9 @@ namespace OngProject
             });
 
             services.AddControllers().AddNewtonsoftJson();
-            
+
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));            
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -120,7 +120,7 @@ namespace OngProject
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            
+
             app.UseAuthentication();
 
             app.UseAuthorization();
