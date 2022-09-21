@@ -22,6 +22,11 @@ namespace OngProject.Controllers
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
 
+        public ContactController(IContactService contactService)
+        {
+            _contactService = contactService;
+        }
+
         public ContactController(IContactService contactService, IUnitOfWork unitOfWork, IMapper mapper, IEmailService emailService)
         {
             _contactService = contactService;

@@ -19,7 +19,7 @@ namespace OngProject.Core.Models
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CategoryId { get; set; }
+        public int ContactId { get; set; }
 
         [Required(ErrorMessage = "El campo Name es requerido")]
         [StringLength(50)]
